@@ -2,11 +2,6 @@
                 TODOS: 
                 
                 .) How to deal with the NaN values? Lead to strange artefacts in the line chart and possibly the map colors -> Ignore them completely?
-
-                .) Color coding line plot. try different combinations for optimal contrast
-                .) Background color for each element?
-                .) Sort the countries within legend by max-value descending. -> Resort first countries_max_values and then countries with same order!
-                .) Strange behaviour with USA...
                 .) CSS Bootstrap?
                 .) Idea for 4th view: static bar plot that shows the top 5 countries with respect to the chosen feature from the drop down list
 -->
@@ -46,7 +41,7 @@
     
         <div class="wrapper">
             <div> <!-- Time slider to control map and scatter plot -->
-                <div class="pull-right" style="margin-left: 1.5em;">
+                <div class="pull-right" style="margin-left: 10em;">
                     <label for="features">Choose a map-feature:</label>
                     <select class="form-control" id="map-line-select">
                         <option value='total_cases'> Total Cases </option>
@@ -73,8 +68,8 @@
                         <option value="handwashing_facilities"> Handwashing Facilities </option>
                         <option value="human_development_index"> Human Development Index </option>
                         <option value="hospital_beds_per_thousand"> Hospital beds per Thousand </option>
-                        <option value="male_smokers"> Male smokers </option>
-                        <option value="female_smokers"> Female Smokers </option>
+                        <option value="male_smokers"> Male smokers (Share of male population) </option>
+                        <option value="female_smokers"> Female Smokers (Share of female population) </option>
                         <option value="diabetes_prevalence"> Diabetes Prevalence </option>
                         <option value="cardiovasc_death_rate"> Cardiovasc Death Rate </option>
                         <option value="extreme_poverty"> Extreme Poverty </option>
@@ -105,8 +100,11 @@
                                                 "percentage_of_people_vaccinated":"Percentage Of People vaccinated",
                                                 "percentage_of_people_fully_vaccinated":"Percentage Of People fully vaccinated",
                                                 "stringency_index":"Stringency Index",
+                                                "reproduction_rate":"Reproduction Rate",
+                                                "icu_patients_per_million":"ICU Patients per Million",
+                                                "hosp_patients_per_million":"Hospital Patients per Million",
                                                 "life_expectancy":"Life Expectancy (in yrs.)",
-                                                "handwashing_facilities":"handwashing Facilities",
+                                                "handwashing_facilities":"Handwashing Facilities",
                                                 "gdp_per_capita":"GDP per Capita (in $)",
                                                 "population_density":"Population Density",
                                                 "median_age":"Median Age",
@@ -114,8 +112,8 @@
                                                 "extreme_poverty":"Extreme Poverty",
                                                 "cardiovasc_death_rate":"Cardiovasc. Death Rate",
                                                 "diabetes_prevalence":"Diabetes Prevalence",
-                                                "female_smokers":"Female Smokers",
-                                                "male_smokers":"Male Smokers",
+                                                "female_smokers":"Female Smokers (Share of female population)",
+                                                "male_smokers":"Male Smokers (Share of male population)",
                                                 "hospital_beds_per_thousand":"Hospital Beds per Thousand",
                                                 "human_development_index":"Human Development Index"
                                                 };
@@ -148,7 +146,7 @@
                         data_full = [];
         
                         // Loading in data and drawing the map
-                        d3.csv('modified.csv').then(data => {
+                        d3.csv('data_covid.csv').then(data => {
                             data_full = data;
 
                             // Subset of data with desired date
@@ -204,8 +202,10 @@
                             .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
                             .attr("class", "track-overlay")
                             .call(d3.drag()
-                                .on("drag", function() { updateMap(d3.mouse(this)[0]); })
-                                .on("end", function() { updateMap(d3.mouse(this)[0]); })); 
+                                .on("drag", function() {    updateMap(d3.mouse(this)[0]);
+                                                            drawScatterPlot(); })
+                                .on("end", function() {     updateMap(d3.mouse(this)[0]);
+                                                            drawScatterPlot(); })); 
                         
                         slider.insert("g", ".track-overlay")
                             .attr("class", "ticks")
@@ -562,80 +562,7 @@
         </div>
 
         <div>
-            <div> <!-- Time slider to control map and scatter plot -->
-                <svg width="1100" height="90" id="slider2"></svg>
-                    <script>
-
-                        setTimeout(function(){
-
-                            var svg2 = d3.select("#slider2"),
-                                width_slider2 = 900;
-                                height_slider2 = 100;
-
-                            var slider2 = svg2.append("g")
-                                .attr("class", "slider")
-                                .attr("transform", "translate(" + (100) + "," + (height_slider2 / 2) + ")");
-                            
-                            var x_slider2 = d3.scaleTime()
-                                .domain([start_date, end_date])
-                                .range([0, width_slider2])
-                                .clamp(true);
-                            
-                            // Contains the selected date
-                            var nameContainer2 = slider2.append("text")
-                                .attr("transform", "translate(" + (width_slider2/2 - 100)  + "," + -20 +")")
-                                .attr("font-size", "18px");
-                            
-                            const showName2 = text => nameContainer2.text("Selected Date: " + text);
-
-                            slider2.append("line")
-                                .attr("class", "track")
-                                .attr("x1", x_slider2.range()[0])
-                                .attr("x2", x_slider2.range()[1])
-                                .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
-                                    .attr("class", "track-inset")
-                                .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
-                                    .attr("class", "track-overlay")
-                                    .call(d3.drag()
-                                        .on("drag", function() { updateScatter(d3.mouse(this)[0]); })
-                                        .on("end", function() { updateScatter(d3.mouse(this)[0]); })); 
-                            
-                            slider2.insert("g", ".track-overlay")
-                                .attr("class", "ticks")
-                                .attr("transform", "translate(0," + 25 + ")")
-                                .selectAll("text")
-                                .data(x_slider2.ticks(7))
-                                .enter().append("text")
-                                    .attr("x", x_slider2)
-                                    .attr("text-anchor", "middle")
-                                    .text(function(d) { return formatDate(d); });
-                                
-                            var handle2 = slider2.insert("circle", ".track-overlay")
-                                .attr("class", "handle")
-                                .attr("r", 12);
-
-                            const updateScatter = mouse => {
-                                // if ... else so that slider handle doesn't go beyond the edges of the track overlay
-                                if (mouse > width_slider2) { handle2.attr("cx", width_slider2); }
-                                else if (mouse < 0) { handle2.attr("cx", 0); }
-                                else { handle2.attr("cx", mouse); 
-
-                                // Gets the selected date based on the slider position
-                                selected_date = x_slider2.invert(mouse);
-                                global_date = formatDate_alternative(selected_date);
-
-                                // Shows the selected date in the name container above the slider track
-                                showName2(formatDate(selected_date));
-
-                                drawScatterPlot();
-                                }
-                            };
-                        },500);
-
-                    </script>
-            </div>
-
-            <div class="pull-right" style="margin-top: 1.5em;">
+            <div class="pull-right" style="margin-left: 1em;">
                 <label for="features">Choose a feature 1:</label>
                 <select class="form-control" id="scatter-select-xfeature">
                     <option value="gdp_per_capita"> Gdp per Capita </option>
@@ -661,8 +588,8 @@
                     <option value="handwashing_facilities"> Handwashing Facilities </option>
                     <option value="human_development_index"> Human Development Index </option>
                     <option value="hospital_beds_per_thousand"> Hospital beds per Thousand </option>
-                    <option value="male_smokers"> Male smokers </option>
-                    <option value="female_smokers"> Female Smokers </option>
+                    <option value="male_smokers"> Male smokers (Share of male population) </option>
+                    <option value="female_smokers"> Female Smokers (Share of female population) </option>
                     <option value="diabetes_prevalence"> Diabetes Prevalence </option>
                     <option value="cardiovasc_death_rate"> Cardiovasc Death Rate </option>
                     <option value="extreme_poverty"> Extreme Poverty </option>
@@ -696,8 +623,8 @@
                     <option value="handwashing_facilities"> Handwashing Facilities </option>
                     <option value="human_development_index"> Human Development Index </option>
                     <option value="hospital_beds_per_thousand"> Hospital beds per Thousand </option>
-                    <option value="male_smokers"> Male smokers </option>
-                    <option value="female_smokers"> Female Smokers </option>
+                    <option value="male_smokers"> Male smokers (Share of male population) </option>
+                    <option value="female_smokers"> Female Smokers (Share of female population) </option>
                     <option value="diabetes_prevalence"> Diabetes Prevalence </option>
                     <option value="cardiovasc_death_rate"> Cardiovasc Death Rate </option>
                     <option value="extreme_poverty"> Extreme Poverty </option>
@@ -717,27 +644,26 @@
                     drawScatterPlot();
                 });
                 </script>
-
             </div>
 
             <!-- Create a div where the graph will take place -->
-            <div id="scatter"></div>
+            <div id="scatter" style="margin-left: 1em;"></div>
 
             <script>
                 // set the dimensions and margins of the graph
-                var margin_scatter = {top: 30, right: 30, bottom: 60, left: 100},
-                    width_scatter = 1200 - margin_scatter.left - margin_scatter.right,
-                    height_scatter = 900 - margin_scatter.top - margin_scatter.bottom;
+                var margin_scatter = {top: 30, right: 50, bottom: 100, left: 130},
+                    width_scatter = 1000 - margin_scatter.left - margin_scatter.right,
+                    height_scatter = 800 - margin_scatter.top - margin_scatter.bottom;
                 
                 // append the svg object to the body of the page
                 var scatter = d3.select("#scatter")
-                .append("svg")
-                .attr("class", "scatter-plot")
-                    .attr("width", width_scatter + margin_scatter.left + margin_scatter.right + 140)
-                    .attr("height", height_scatter + margin_scatter.top + margin_scatter.bottom)
-                .append("g")
-                    .attr("transform",
-                        "translate(" + margin_scatter.left + "," + margin_scatter.top + ")")
+                        .append("svg")
+                        .attr("class", "scatter-plot")
+                            .attr("width", width_scatter + margin_scatter.left + margin_scatter.right + 140)
+                            .attr("height", height_scatter + margin_scatter.top + margin_scatter.bottom)
+                        .append("g")
+                            .attr("transform",
+                                "translate(" + margin_scatter.left + "," + margin_scatter.top + ")")
 
                 var x_scatter = d3.scaleLinear()
                     .range([0, width_scatter]);
@@ -749,15 +675,15 @@
                     .call(xAxis_scatter)
                     .call(g => g.select(".domain").remove())
                         .selectAll("text")
-                        .attr("font-size", "10px")
+                        .attr("font-size", "15px")
                         .style("text-anchor", "end")
                         .attr("dx", "-0.01em")
                         .attr("dy", "1.35em")
                         .attr("transform", "rotate(-35)");
 
                 var x_feature_scatter = scatter.append("text")
-                        .attr("transform", "translate(" + (width_scatter/2) + "," + (height_scatter + 55) + ")")
-                        .attr("font-size", 18)
+                        .attr("transform", "translate(" + (width_scatter/2) + "," + (height_scatter + 90) + ")")
+                        .attr("font-size", 25)
                         .attr("font-weight", "bold")
                         .style("text-anchor", "middle")
                         .text(feature_names[scatter_xfeature]);
@@ -769,12 +695,18 @@
                 scatter.append("g")
                     .attr("class", "y-axis-scatter")
                     .call(yAxis_scatter)
-                    .call(g => g.select(".domain").remove());
+                    .call(g => g.select(".domain").remove())
+                    .selectAll("text")
+                        .attr("font-size", "15px")
+                        .style("text-anchor", "end")
+                        .attr("dx", "-1.1em")
+                        .attr("dy", "-0.35em")
+                        .attr("transform", "rotate(-35)");
 
                 var y_feature_scatter = scatter.append("text")
-                                .attr("transform", "translate(" + -60 + "," + (height_scatter/2) + ")rotate(-90)")
+                                .attr("transform", "translate(" + -100 + "," + (height_scatter/2) + ")rotate(-90)")
                                 .style("text-anchor", "middle")
-                                .attr("font-size", 18)
+                                .attr("font-size", 25)
                                 .attr("font-weight", "bold")
                                 .text(feature_names[scatter_yfeature]);
 
@@ -808,7 +740,7 @@
                                 .attr("transform", "translate(" + (5) + "," + 20 + ")");
                 
                 legend_scatter.append("text")
-                            .attr("font-size", 12)
+                            .attr("font-size", 18)
                             .attr("font-weight", "Bold")
                             .attr("x", 5)
                             .attr("y", 10)
@@ -827,22 +759,22 @@
                 legend_continents.selectAll("text")
                         .data(cvs)
                         .enter().append("text")
-                            .attr("font-size", 12)
+                            .attr("font-size", 15)
                             .attr("font-weight", "Normal")
                             .attr("x", 25)
                             .attr("y", function(d, i) { return (i+0.4)*20; })
                             .text(function(d) { return d; });
 
                 legend_scatter.append("text")
-                            .attr("font-size", 12)
+                            .attr("font-size", 18)
                             .attr("font-weight", "Bold")
                             .attr("x", 5)
-                            .attr("y", 150)
+                            .attr("y", 155)
                                 .text("Population");
 
                 const values_pop = [50000, 30000000, 100000000, 500000000, 1400000000];
                 const values_pop_text = ["50k", "30 mill", "100 mill", "500 mill", "1.4 bill"]
-                const y_values_pop = [170, 223, 254, 273, 288] 
+                const y_values_pop = [170, 245, 287, 310, 325] 
                 const x_values_pop_text = [60, 50, 40, 37, 32]
 
                 // regulates size of scatter points
@@ -853,18 +785,18 @@
                 legend_bubbles.selectAll(".circle-pop")
                     .data(values_pop.reverse())
                     .enter().append("circle")
-                        .attr("cx", 25)
-                        .attr("cy", function(d, i) { return y_values_pop[i]; })
-                        .attr("r", function(d) { return scale_population(d);})
+                        .attr("cx", 35)
+                        .attr("cy", function(d, i) { return y_values_pop[i]+15; })
+                        .attr("r", function(d) { return scale_population(d)*1.5;})
                         .attr("fill", "gray");
 
                 legend_continents.selectAll(".text-bubbles")
                         .data(values_pop_text.reverse())
                         .enter().append("text")
-                            .attr("font-size", 12)
+                            .attr("font-size", 15)
                             .attr("font-weight", "Normal")
-                            .attr("x", function(d, i) { return x_values_pop_text[i]; })
-                            .attr("y", function(d, i) { return y_values_pop[i]+4; })
+                            .attr("x", function(d, i) { return x_values_pop_text[i]+25; })
+                            .attr("y", function(d, i) { return y_values_pop[i]+20; })
                             .text(function(d) { return d; });
 
                 const updateXAxisTitleScatter = () => {
@@ -907,7 +839,7 @@
                         .call(xAxis_scatter)
                         .call(g => g.select(".domain").remove())
                             .selectAll("text")
-                            .attr("font-size", "10px")
+                            .attr("font-size", "15px")
                             .style("text-anchor", "end")
                             .attr("dx", "-.8em")
                             .attr("dy", ".15em")
@@ -919,25 +851,31 @@
                         //.transition()
                         //.duration(1000)
                         .call(yAxis_scatter)
-                        .call(g => g.select(".domain").remove());
+                        .call(g => g.select(".domain").remove())
+                            .selectAll("text")
+                            .attr("font-size", "15px")
+                            .style("text-anchor", "end")
+                            .attr("dx", "-1.1em")
+                            .attr("dy", "-0.35em")
+                            .attr("transform", "rotate(-35)");
 
                     // Draw the circles
                     scatter.append('g')
                         .selectAll("dot")
-                        .data(new_data).enter()
+                        .data(new_data).enter() 
                         .append("circle")
                             .attr("class", "circles-scatter")
                             .attr("cx", function (d) { return x_scatter(d[scatter_xfeature]); })
                             .attr("cy", function (d) { return y_scatter(d[scatter_yfeature]); })
-                            .attr("r", function (d)  { return scale_population(+d["population"]); })
+                            .attr("r", function (d)  { return scale_population(+d["population"])*1.5; })
                             .style("fill", function (d) { return continents_colors[d["continent"]]; })
                             .on("mouseover", function(d) {
 
                                 scatter.append("text")
                                         .attr("id", "mouse-over-label")
-                                        .attr("x", function() { return x_scatter(d[scatter_xfeature]) + scale_population(+d["population"]);})
-                                        .attr("y", function() { return y_scatter(d[scatter_yfeature]) - 5;})
-                                        .attr("font-size", "13px")
+                                        .attr("x", function() { return x_scatter(d[scatter_xfeature]) + scale_population(+d["population"]) + 8 ;})
+                                        .attr("y", function() { return y_scatter(d[scatter_yfeature]) - 8 ;})
+                                        .attr("font-size", "17px")
                                         .text(d["location"])
 
                             })
