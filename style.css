@@ -1,0 +1,126 @@
+/*
+body {
+  background-color: #c45252;
+}
+*/
+
+.pull-right{
+  width: 400px;
+}
+
+.wrapper {
+  display: grid;
+  grid-template-columns: 1000px 1000px;
+  column-gap: 430px;
+  row-gap: 10px;
+  }
+
+h1 {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  display: block;
+  font-size: 5em;
+}
+
+.ticks {
+  font: 17px sans-serif;
+}
+
+.tick line {
+  stroke: rgb(255, 255, 255);
+  opacity: 0.4;
+  stroke-width: 2;
+}
+
+.track,
+.track-inset,
+.track-overlay {
+  stroke-linecap: round;
+}
+
+.track {
+  stroke: #000;
+  stroke-opacity: 0.3;
+  stroke-width: 10px;
+}
+
+.track-inset {
+  stroke: rgb(235, 229, 229);
+  stroke-width: 15px;
+}
+
+.track-overlay {
+  pointer-events: stroke;
+  stroke-width: 100px;
+  stroke: transparent;
+  cursor: crosshair;
+}
+
+.handle {
+  fill: #fff;
+  stroke: #000;
+  stroke-opacity: 0.3;
+  stroke-width: 1.5px;
+}
+
+.line {
+  fill: none;
+  stroke-width: 6;
+  opacity: 0.5;
+}
+
+.line:hover {
+  opacity: 1;  
+  stroke-width: 10;
+}
+
+.overlay {
+fill: none;
+pointer-events: all;
+}
+
+/* Style the dots by assigning a fill and stroke */
+.dot {
+  fill: #ffab00;
+  stroke: #fff;
+}
+
+.legend-markers {
+  stroke: rgb(255, 255, 255);
+  stroke-width: 0.1;
+}
+
+.legend-bg {
+  fill: #e0e0e0f6;
+  opacity : 0.4;
+}
+
+.grid line {
+  stroke: rgb(230, 228, 226);
+  stroke-opacity: 0.2;
+  shape-rendering: crispEdges;
+}
+
+.grid path {
+  stroke-width: 0;
+}
+
+.scatter-plot {
+  background-color: #dadadaf6;
+}
+
+.line-chart {
+  background-color: #dadadaf6;
+}
+
+circle {
+  stroke : black;
+  stroke-width : 0.4;
+  opacity : 0.6;
+}
+
+circle:hover {
+  opacity: 1;  
+}
