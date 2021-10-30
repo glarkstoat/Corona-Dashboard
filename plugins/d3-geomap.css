@@ -10,13 +10,15 @@
   cursor: pointer;
   fill: #ccc;
   stroke: #000;
+  opacity: 0.7;
   stroke-width: .4px; }
 
 .d3-geomap .unit:hover {
     cursor: pointer;
     fill: #ccc;
+    opacity: 1;
     stroke: rgba(0, 0, 0, 0.774);
-    stroke-width: 1px; }
+    stroke-width: 1.2px; }
 
 .d3-geomap .legend-bg {
   fill: #fff;

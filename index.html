@@ -165,7 +165,7 @@
                     </script>
                 </div>
         
-                <svg width="1000" height="100" id="slider_map"></svg> 
+                <svg width="1800" height="100" id="slider_map"></svg> 
                 <script>
 
                     setTimeout(function(){
@@ -184,11 +184,11 @@
         
                         var slider = svg.append("g")
                             .attr("class", "slider")
-                            .attr("transform", "translate(" + (100) + "," + (height_slider / 2) + ")");
+                            .attr("transform", "translate(" + (280) + "," + (height_slider / 2) + ")");
         
                         // Contains the selected date
                         var nameContainer = slider.append("text")
-                            .attr("transform", "translate(" + (width_slider/2 - 100)  + "," + -20 +")")
+                            .attr("transform", "translate(" + (width_slider/2 - 130)  + "," + -20 +")")
                             .attr("font-size", "22px");
         
                         const showName = text => nameContainer.text("Selected Date: " + text);

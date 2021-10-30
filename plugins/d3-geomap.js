@@ -171,7 +171,7 @@ function () {
       if (d && d.hasOwnProperty('geometry') && this._.centered !== d) {
         
         // If country is clicked, new line for chosen country is drawn
-        drawLineChart(d.properties.name);        
+        drawLineChart(d.properties.name);      
         
         var centroid = this.path.centroid(d);
         x = centroid[0];
