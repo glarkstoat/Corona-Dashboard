@@ -1,7 +1,7 @@
 <!--            
                 TODOS: 
                 
-                .) How to deal with the NaN values? Lead to strange artefacts in the line chart and possibly the map colors -> Ignore them completely?
+                .) When clicking on a country to add its line to the line plot, the maximum value is not calculated correctly!
                 .) CSS Bootstrap?
                 .) Idea for 4th view: static bar plot that shows the top 5 countries with respect to the chosen feature from the drop down list
 -->
@@ -400,7 +400,7 @@
                     var line = d3.line()
                                 .x(function(d) { return x_linechart(new Date(d.date)); })
                                 .y(function(d) { return y_linechart(d[map_line_feature]); }) 
-                                .curve(d3.curveMonotoneX) // necessary?
+                                .curve(d3.curveMonotoneX);
                     
                     const addLine = (data, color) => {
                         svg.append("path")
@@ -435,7 +435,11 @@
                             
                             countries.push(location);
                                 
-                            var data_new = data_full.filter(row => row.location === location);
+                            // Filter out data of the selected country
+                            var data_new = data_full.filter(row => row.location === location && 
+                                                                   row[map_line_feature].length > 0 && // don't include if there is not data
+                                                                   +row[map_line_feature] >= 0); // don't include if feature is below 0 (data cleaning)
+
                             var features = data_new.map(row => +row[map_line_feature]);
                             var current_max = d3.max(features);
                             countries_max_values.push(current_max);
@@ -489,7 +493,9 @@
 
                                     countries.forEach((d, i) => {
                                         color = d3.interpolateOrRd(color_scale(countries_max_values[i]));                               
-                                        data_new = data_full.filter(row => row.location === d);
+                                        data_new = data_full.filter(row => row.location === d && 
+                                                                   row[map_line_feature].length > 0 &&
+                                                                   +row[map_line_feature] >= 0);
                                         addLine(data_new, color);
                                     })
                                 }
@@ -499,9 +505,11 @@
                                 reset_soft_line(); // removes all lines
 
                                 countries.forEach((d, i) => {
-                                color = d3.interpolateOrRd(color_scale(countries_max_values[i]));                               
-                                data_new = data_full.filter(row => row.location === d);
-                                addLine(data_new, color);
+                                    color = d3.interpolateOrRd(color_scale(countries_max_values[i]));                               
+                                    data_new = data_full.filter(row => row.location === d && 
+                                                                   row[map_line_feature].length > 0 &&
+                                                                   +row[map_line_feature] >= 0);
+                                    addLine(data_new, color);
                                 });
                             };
                         };
@@ -518,7 +526,9 @@
 
                         countries.forEach(d => {
 
-                            var data_new = data_full.filter(row => row.location === d);
+                            var data_new = data_full.filter(row => row.location === d && 
+                                                                   row[map_line_feature].length > 0 &&
+                                                                   +row[map_line_feature] >= 0);
                             var features = data_new.map(row => +row[map_line_feature]);
                             var current_max = d3.max(features);
                             countries_max_values.push(current_max);
@@ -547,7 +557,9 @@
 
                         countries.forEach((d, i) => {
                             color = d3.interpolateOrRd(color_scale(countries_max_values[i]));                               
-                            data_new = data_full.filter(row => row.location === d);
+                            data_new = data_full.filter(row => row.location === d && 
+                                                                   row[map_line_feature].length > 0 &&
+                                                                   +row[map_line_feature] >= 0);
                             addLine(data_new, color);
 
                         });
