@@ -130,6 +130,7 @@
                     </script>
                 </div>
 
+                <!-- World map showing the chosen feature via color coding of the countries -->
                 <div class="d3-geomap" id="map">
                     <script>
                         var map = d3.choropleth()
@@ -159,16 +160,16 @@
                         
                         // combats asynchronous loading of data. So that data is written into data_full and can be 
                         // accessed as a global variable. 
-                        
                         setTimeout(function(){
                         },50);
                     </script>
                 </div>
         
+                <!-- Time slider for the map as well as the scatter plot -->
                 <svg width="1800" height="100" id="slider_map"></svg> 
                 <script>
 
-                    setTimeout(function(){
+                    setTimeout(function(){ // needed so that data_full can be accessed
 
                         end_date = new Date(data_full.at(-1).date);
 
@@ -240,12 +241,13 @@
                             showName(formatDate(selected_date));
                             }
                         };
-                    },500);
+                    },500);  // timeout for loading of data_full  
 
                 </script>
             </div>
         <div>
 
+        <!-- Line chart with dropdown menus for both axes. Controlled via time slider -->
         <div>
             <rect id="line-chart">
                 <script>
@@ -315,7 +317,8 @@
                     var y_linechart = d3.scaleLinear()
                         .range([height, 0]);
                     var yAxis_line = d3.axisLeft(y_linechart).tickSize(-width+10);
-                                        
+                                     
+                    // y-axis tick labels
                     svg.append("g")
                         .attr("class", "y-axis")
                         .call(yAxis_line)
@@ -333,7 +336,7 @@
                                 .attr("font-size", 25)
                                 .attr("font-weight", "bold");
 
-                    // If different feature is selected
+                    // If different feature is selected from the dropdown menu
                     const updateLineYAxisTitle = () => {
                         y_feature
                             .text(feature_names[map_line_feature]);
@@ -363,6 +366,7 @@
                                     .attr("height", 170)
                                     .attr("transform", "translate(" + (5) + "," + 20 + ")");
                 
+                    // Draws the legend of the line chart
                     const drawLegend = (selected_country) => {
                         
                         var color_scale = d3.scaleLinear()
@@ -391,6 +395,8 @@
                                     .text(function(d) { return d; });
                     };
 
+                    // Global variables to track already chosen countries and their corresponding maximum values of the
+                    // chosen feature
                     var global_max = 0;
                     var global_max_location = 0;
                     var countries = [];
@@ -402,6 +408,7 @@
                                 .y(function(d) { return y_linechart(d[map_line_feature]); }) 
                                 .curve(d3.curveMonotoneX);
                     
+                    // Adds the line to the line chart for each country
                     const addLine = (data, color) => {
                         svg.append("path")
                         .datum(data)
@@ -409,14 +416,15 @@
                         .attr("stroke", color)
                         .on("mouseover", function(d) {
                             selected_country = data[0]["location"];
-                            drawLegend(selected_country);
+                            drawLegend(selected_country); // highlights the country the mouse hovers over
                         })
                         .on("mouseout", function(d) {
-                            drawLegend();
+                            drawLegend(); // reverts the highlighting
                         })
                         .attr("d", line)
                     };
                 
+                    // Is called every time a country is clicked-on on the map
                     const drawLineChart = location => {
 
                         // Update the xaxis domain with end_date taken from the csv-file
@@ -431,7 +439,7 @@
                                 .attr("dy", ".55em")
                                 .attr("transform", "rotate(-35)");
 
-                        if (countries.indexOf(location) === -1) { // new country was not selected yet
+                        if (countries.indexOf(location) === -1) { // country was not selected yet
                             
                             countries.push(location);
                                 
@@ -515,20 +523,23 @@
                         };
                     };  
 
-                    // Function is the case that new feature is chosen from drop-down list
+                    // Is called if new feature is chosen from dropdown list
                     const redrawLine = () => {
-                        reset_soft_line();
+                        reset_soft_line(); // removes all lines from line chart
 
+                        // Reset global values for the new feature
                         new_feature_max = 0;
                         max_location = 0;
                         countries_max_values = [];
                         global_max = 0;
 
-                        countries.forEach(d => {
+                        countries.forEach(d => { // Maximum values of the new feature for each country are re-computed
+                                                 // necessary because the y-scale has to be re-computed
 
                             var data_new = data_full.filter(row => row.location === d && 
                                                                    row[map_line_feature].length > 0 &&
                                                                    +row[map_line_feature] >= 0);
+                                                                   
                             var features = data_new.map(row => +row[map_line_feature]);
                             var current_max = d3.max(features);
                             countries_max_values.push(current_max);
@@ -538,6 +549,9 @@
                                 new_feature_max = current_max;
                             }
                         });
+
+                        // Is needed by DrawLineChart to plot the new country correctly
+                        global_max = new_feature_max;
 
                         var color_scale = d3.scaleLinear()
                                                 .domain(d3.extent(countries_max_values))
@@ -568,11 +582,13 @@
             </rect>
         </div>  
 
+            <!-- Reset button beneath the line chart to reset it completely -->
             <div>
                 <button onclick="reset_hard_line()">Reset</button>
             </div>
         </div>
 
+        <!-- Drowdown menus for selecting the x- and y-features for the scatter plot -->
         <div>
             <div class="pull-right" style="margin-left: 1em;">
                 <label for="features">Choose a feature 1:</label>
@@ -658,16 +674,14 @@
                 </script>
             </div>
 
-            <!-- Create a div where the graph will take place -->
+            <!-- Scatter plot to show correlation between two features -->
             <div id="scatter" style="margin-left: 1em;"></div>
 
             <script>
-                // set the dimensions and margins of the graph
                 var margin_scatter = {top: 30, right: 50, bottom: 100, left: 130},
                     width_scatter = 1000 - margin_scatter.left - margin_scatter.right,
                     height_scatter = 800 - margin_scatter.top - margin_scatter.bottom;
                 
-                // append the svg object to the body of the page
                 var scatter = d3.select("#scatter")
                         .append("svg")
                         .attr("class", "scatter-plot")
@@ -784,6 +798,7 @@
                             .attr("y", 155)
                                 .text("Population");
 
+                // Bubbles in the legend to showcase the size of the population
                 const values_pop = [50000, 30000000, 100000000, 500000000, 1400000000];
                 const values_pop_text = ["50k", "30 mill", "100 mill", "500 mill", "1.4 bill"]
                 const y_values_pop = [170, 245, 287, 310, 325] 
