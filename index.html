@@ -1,6 +1,7 @@
 <!--
                 TODOS: 
                 .) Improve initial view. Perhaps show lines of pre-determined set of coutries (eg. USA, India, Brasil)
+                .) Logarithmic scale for scatter plot?
                 .) CSS Bootstrap?
                 .) Idea for 4th view: static bar plot that shows the top 5 countries with respect to the chosen feature from the drop down list
 -->
@@ -57,6 +58,8 @@
                         <option value="hosp_patients_per_million"> Hospital patients per million </option>      
                         <option value="total_tests"> Total Tests </option> total_vaccinations
                         <option value="total_vaccinations"> Total Vaccinations </option>
+                        <option value="new_vaccinations_smoothed_per_million"> New vaccinations per million </option>
+                        
                         <option value="people_vaccinated"> People vaccinated </option>      
                         <option value="people_fully_vaccinated" > People fully vaccinated  </option>
                         <option value="percentage_of_people_vaccinated">Percentage Of People vaccinated </option>
@@ -74,8 +77,8 @@
                         <option value="extreme_poverty"> Extreme Poverty </option>
                         <option value="aged_70_older"> Aged 70 older </option>
                         <option value="median_age"> Median Age </option>
-                        <option value="population_density"> Population Density </option>
-                    </select>
+                        <option value="population"> Population </option>
+                    </select> 
             
                     <!-- Two dropdown menus for selecting the features for the map and the line chart (global feature)
                     and for the scatter plot (global feature & feature2). -->
@@ -94,6 +97,7 @@
                                                 "hosp_patients":"Hospital Cases",
                                                 "total_tests":"Total Tests",
                                                 "total_vaccinations":"Total Vaccinations",
+                                                "new_vaccinations_smoothed_per_million":"New vaccinations per million",
                                                 "people_vaccinated":"People vaccinated",
                                                 "people_fully_vaccinated":"People fully vaccinated",
                                                 "percentage_of_people_vaccinated":"Percentage Of People vaccinated",
@@ -616,6 +620,7 @@
                     <option value="people_fully_vaccinated" > People fully vaccinated  </option>
                     <option value="percentage_of_people_vaccinated">Percentage Of People vaccinated </option>
                     <option value="percentage_of_people_fully_vaccinated">Percentage Of People fully vaccinated</option>
+                    <option value="new_vaccinations_smoothed_per_million"> New vaccinations per million </option>
 
                     <option value="stringency_index"> Stringency Index </option>
                     <option value="life_expectancy"> Life Expectancy </option> 
@@ -630,7 +635,7 @@
                     <option value="extreme_poverty"> Extreme Poverty </option>
                     <option value="aged_70_older"> Aged 70 older </option>
                     <option value="median_age"> Median Age </option>
-                    <option value="population_density"> Population Density </option>
+                    <option value="population"> Population </option>
                 </select>
                 
                 <label for="features">Choose a feature 2:</label>
@@ -652,6 +657,7 @@
                     <option value="people_fully_vaccinated" > People fully vaccinated  </option>
                     <option value="percentage_of_people_vaccinated">Percentage Of People vaccinated </option>
                     <option value="percentage_of_people_fully_vaccinated">Percentage Of People fully vaccinated</option>
+                    <option value="new_vaccinations_smoothed_per_million"> New vaccinations per million </option>
 
                     <option value="stringency_index"> Stringency Index </option>
                     <option value="life_expectancy"> Life Expectancy </option> 
@@ -666,7 +672,7 @@
                     <option value="extreme_poverty"> Extreme Poverty </option>
                     <option value="aged_70_older"> Aged 70 older </option>
                     <option value="median_age"> Median Age </option>
-                    <option value="population_density"> Population Density </option>
+                    <option value="population"> Population </option>
                 </select>
 
                 <script>
@@ -944,6 +950,62 @@
                     <button onclick="reset_soft_scatter()">Reset</button>
                 </div>
             </div>
+        
+            <!-- Bar plot to show the countries with the highest values for the chosen feature -->
+            <div id="barChart" style="margin-left: 1em;"></div>
+
+            <script>
+                var margin_barChart = {top: 30, right: 50, bottom: 100, left: 130},
+                    width_barChart = 1000 - margin_barChart.left - margin_barChart.right,
+                    height_barChart = 800 - margin_barChart.top - margin_barChart.bottom;
+                
+                var barChart = d3.select("#barChart")
+                        .append("svg")
+                        .attr("class", "bar-plot")
+                            .attr("width", width_barChart + margin_barChart.left + margin_barChart.right + 140)
+                            .attr("height", height_barChart + margin_barChart.top + margin_barChart.bottom)
+                        .append("g")
+                            .attr("transform",
+                                "translate(" + margin_barChart.left + "," + margin_barChart.top + ")")
+
+
+                
+            // ScaleBand for discrete x-values and scaleLinear for contiguous y-values 
+            const scale_x = d3.scaleBand().range ([0, width_barChart]).padding(0.2);
+            const scale_y = d3.scaleLinear().range ([height_barChart, 0]);
+          
+        /*
+               
+                // Add a title
+                barChart.append("text")
+                .attr("transform", "translate(500,70)")
+                .attr("font-size", "36px")
+                .attr("stroke", "black")
+                .style("font-weight", "bold")
+                .text("3 Point Percentage per Team");
+            
+                
+        
+            
+                function make_y_gridlines() {
+                    return d3.axisLeft(scale_y)
+                        .ticks(10)
+                };
+    */
+                </script>
+            </div>
+        
+        
+        
+        
+        
+        
+        
+        
+        
         </div>
+
+        
+
     </body>
 </html>
