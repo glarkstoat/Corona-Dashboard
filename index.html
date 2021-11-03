@@ -1,5 +1,6 @@
 <!--
                 TODOS: 
+                .) Improve initial view. Perhaps show lines of pre-determined set of coutries (eg. USA, India, Brasil)
                 .) CSS Bootstrap?
                 .) Idea for 4th view: static bar plot that shows the top 5 countries with respect to the chosen feature from the drop down list
 -->
@@ -27,14 +28,14 @@
         <script>
                 // Global values that will be changed if time-slider is moved, 
                 // or if different feature is selected from drop-down menu
-                map_line_feature = "total_cases";   
-                scatter_xfeature = "gdp_per_capita";             
-                scatter_yfeature = "life_expectancy";
-                global_date = "2020-01-22";
-                start_date = new Date('2020-01-22');
-                end_date = new Date('2020-10-16');
-                formatDate = d3.timeFormat("%b %d %Y");
-                formatDate_alternative = d3.timeFormat("%Y-%m-%d");
+                var map_line_feature = "total_cases";   
+                var scatter_xfeature = "total_cases_per_million";             
+                var scatter_yfeature = "total_deaths_per_million";
+                var global_date = "2020-01-22";
+                var start_date = new Date('2020-01-22');
+                var end_date = new Date('2020-10-16');
+                var formatDate = d3.timeFormat("%b %d %Y");
+                var formatDate_alternative = d3.timeFormat("%Y-%m-%d");
         </script>
     
         <div class="wrapper">
@@ -142,15 +143,18 @@
                                 .unitId('iso3');
         
                         // Global variable containing the csv-data
-                        data_full = [];
+                        var data_full = []; // former: data_full = [] instead of var ...
         
                         // Loading in data and drawing the map
                         d3.csv('data_covid.csv').then(data => {
                             data_full = data;
+                            
+                            // Gets the most recent date from the data
+                            end_date = new Date(data_full.at(-1).date);
+                            global_date = formatDate_alternative(end_date);
 
-                            // Subset of data with desired date
-                            // solution to dealing with temporal data
-                            new_data = data.filter(row => row.date === global_date);
+                            // Initially plots the map with the data from the most recent date
+                            new_data = data.filter(row => row.date === formatDate_alternative(end_date));
         
                             var selection = d3.select('#map').datum(new_data);
                             map.draw(selection);
@@ -159,7 +163,7 @@
                         // combats asynchronous loading of data. So that data is written into data_full and can be 
                         // accessed as a global variable. 
                         setTimeout(function(){
-                        },50);
+                        },100);
                     </script>
                 </div>
         
@@ -168,8 +172,6 @@
                 <script>
 
                     setTimeout(function(){ // needed so that data_full can be accessed
-
-                        end_date = new Date(data_full.at(-1).date);
 
                         var svg = d3.select("#slider_map"),
                         margin_slider = {right: 20, left: 20},
@@ -190,7 +192,9 @@
                             .attr("transform", "translate(" + (width_slider/2 - 130)  + "," + -20 +")")
                             .attr("font-size", "22px");
         
+                        // Shows selected date above the slider
                         const showName = text => nameContainer.text("Selected Date: " + text);
+                        showName(formatDate(end_date)); // Shows the initial date
         
                         slider.append("line")
                             .attr("class", "track")
@@ -206,6 +210,7 @@
                                 .on("end", function() {     updateMap(d3.mouse(this)[0]);
                                                             drawScatterPlot(); })); 
                         
+                        // Time ticks of slider
                         slider.insert("g", ".track-overlay")
                             .attr("class", "ticks")
                             .attr("transform", "translate(0," + 25 + ")")
@@ -219,6 +224,9 @@
                         var handle = slider.insert("circle", ".track-overlay")
                             .attr("class", "handle")
                             .attr("r", 12);
+
+                        // Sets the initial position of the handle to the most recent date
+                        handle.attr("cx", width_slider);
                     
                         // Regulats what happens if slider is moved
                         const updateMap = mouse => {
@@ -591,9 +599,8 @@
             <div class="pull-right" style="margin-left: 1em;">
                 <label for="features">Choose a feature 1:</label>
                 <select class="form-control" id="scatter-select-xfeature">
-                    <option value="gdp_per_capita"> Gdp per Capita </option>
-                    <option value='total_cases'> Total Cases </option>
                     <option value='total_cases_per_million'> Total Cases per million </option>
+                    <option value='total_cases'> Total Cases </option>
                     <option value='new_cases_smoothed'> New Cases </option>
                     <option value='new_cases_smoothed_per_million'> New Cases per million </option>
                     <option value="total_deaths"> Total Deaths </option>
@@ -609,8 +616,10 @@
                     <option value="people_fully_vaccinated" > People fully vaccinated  </option>
                     <option value="percentage_of_people_vaccinated">Percentage Of People vaccinated </option>
                     <option value="percentage_of_people_fully_vaccinated">Percentage Of People fully vaccinated</option>
+
                     <option value="stringency_index"> Stringency Index </option>
                     <option value="life_expectancy"> Life Expectancy </option> 
+                    <option value="gdp_per_capita"> Gdp per Capita </option>
                     <option value="handwashing_facilities"> Handwashing Facilities </option>
                     <option value="human_development_index"> Human Development Index </option>
                     <option value="hospital_beds_per_thousand"> Hospital beds per Thousand </option>
@@ -626,13 +635,12 @@
                 
                 <label for="features">Choose a feature 2:</label>
                 <select class="form-control" id="scatter-select-yfeature">
-                    <option value="life_expectancy"> Life Expectancy </option> 
+                    <option value="total_deaths_per_million"> Total Deaths per million </option>
                     <option value='total_cases'> Total Cases </option>
                     <option value='total_cases_per_million'> Total Cases per million </option>
                     <option value='new_cases_smoothed'> New Cases </option>
                     <option value='new_cases_smoothed_per_million'> New Cases per million </option>
                     <option value="total_deaths"> Total Deaths </option>
-                    <option value="total_deaths_per_million"> Total Deaths per million </option>
                     <option value="new_deaths_smoothed"> New Deaths </option>
                     <option value="new_deaths_smoothed_per_million"> New Deaths per Million </option>         
                     <option value="reproduction_rate"> Reproduction Rate </option>
@@ -644,7 +652,9 @@
                     <option value="people_fully_vaccinated" > People fully vaccinated  </option>
                     <option value="percentage_of_people_vaccinated">Percentage Of People vaccinated </option>
                     <option value="percentage_of_people_fully_vaccinated">Percentage Of People fully vaccinated</option>
+
                     <option value="stringency_index"> Stringency Index </option>
+                    <option value="life_expectancy"> Life Expectancy </option> 
                     <option value="gdp_per_capita"> Gdp per Capita </option>
                     <option value="handwashing_facilities"> Handwashing Facilities </option>
                     <option value="human_development_index"> Human Development Index </option>
@@ -923,7 +933,11 @@
                             .style("opacity", 0.3);
                     */
 
-                        };
+                };
+
+                setTimeout(function(){ // needed so that end_date can be accessed      
+                    drawScatterPlot();
+                },500); 
 
                 </script>
                 <div>
