@@ -456,7 +456,7 @@
                             .call(xAxis_line)
                             .call(g => g.select(".domain").remove())
                             .selectAll("text")  
-                                .attr("font-size", "18px")
+                                .attr("font-size", "15px")
                                 .style("text-anchor", "end")
                                 .attr("dx", "-.1em")
                                 .attr("dy", ".55em")
@@ -508,8 +508,8 @@
                                     
                                     color = d3.interpolateOrRd(color_scale(current_max));                               
                                     addLine(data_new, color);
-            
                                 }
+
                                 // If selected country is not the first and has greater max than current country
                                 // previous countries must be plotted again using new yAxis-scale!!
                                 else if (global_max > 0) {
