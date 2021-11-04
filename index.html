@@ -1,9 +1,10 @@
 <!--
                 TODOS: 
-                .) Fix x-axis of bar chart
                 .) Improve initial view. Perhaps show lines of pre-determined set of coutries (eg. USA, India, Brasil)
                 .) Logarithmic scale for scatter plot?
                 .) CSS Bootstrap?
+                .) problems with transitions where axis-lines appear during the transition
+                .) Tooltips under/beneath the charts to explain how to use them 
 -->
 
 <html>
@@ -37,6 +38,7 @@
                 var end_date = new Date('2020-10-16');
                 var formatDate = d3.timeFormat("%b %d %Y");
                 var formatDate_alternative = d3.timeFormat("%Y-%m-%d");
+                var selected_country = "";
         </script>
     
         <div class="wrapper">
@@ -109,7 +111,7 @@
                                                 "life_expectancy":"Life Expectancy (in yrs.)",
                                                 "handwashing_facilities":"Handwashing Facilities",
                                                 "gdp_per_capita":"GDP per Capita (in $)",
-                                                "population_density":"Population Density",
+                                                "population":"Population",
                                                 "median_age":"Median Age",
                                                 "aged_70_older":"Aged 70 or older",
                                                 "extreme_poverty":"Extreme Poverty",
@@ -121,7 +123,7 @@
                                                 "human_development_index":"Human Development Index"
                                                 };
                             
-                        // Upon change of first feature, map and line chart are redrawn
+                        // Upon change of first feature, map, line chart and bar chart are redrawn
                         d3.select('#map-line-select').on('change', function() {
                             map_line_feature = this.value;
                             map.column(map_line_feature).update()
@@ -150,7 +152,7 @@
                                 .unitId('iso3');
         
                         // Global variable containing the csv-data
-                        var data_full = []; // former: data_full = [] instead of var ...
+                        var data_full = [];
         
                         // Loading in data and drawing the map
                         d3.csv('data_covid.csv').then(data => {
@@ -170,7 +172,7 @@
                         // combats asynchronous loading of data. So that data is written into data_full and can be 
                         // accessed as a global variable. 
                         setTimeout(function(){
-                        },10);
+                        },50);
                     </script>
                 </div>
         
@@ -258,7 +260,7 @@
                                 .attr("text-anchor", "middle")
                                 .text(function(d) { return formatDate(d); });
                         
-                    },500);  // timeout for loading of data_full
+                    },1000);  // timeout for loading of data_full
 
                 </script>
             </div>
@@ -274,6 +276,7 @@
                         global_max = 0;
                         countries = [];
                         countries_max_values = [];
+                        values = [];
                         d3.select("#line-chart")
                             .select("svg")      
                             .selectAll(".line")
@@ -348,7 +351,7 @@
                                 .attr("transform", "rotate(-35)");
 
                     y_feature = svg.append("text")
-                                .attr("transform", "translate(" + -90 + "," + (height/2) + ")rotate(-90)")
+                                .attr("transform", "translate(" + -95 + "," + (height/2) + ")rotate(-90)")
                                 .style("text-anchor", "middle")
                                 .attr("font-size", 25)
                                 .attr("font-weight", "bold");
@@ -391,25 +394,27 @@
                                                 .range([0, 1]);
                         reset_soft_legend();
                         legend_colors.selectAll("rect")
-                                .data(countries)
-                                .enter().append("rect")
-                                    .attr("x", 0)
-                                    .attr("y", function(d, i) { return (i-0.45)*20; })
-                                    .attr("fill", function(d, i) {
-                                                    color = d3.interpolateOrRd(color_scale(countries_max_values[i]));                               
-                                                    return color;
-                                                })
-                                    .attr("width", 10)
-                                    .attr("height", 10);
+                                .data(values)
+                                .enter()
+                                    .append("rect")
+                                        .attr("x", 0)
+                                        .attr("y", function(d, i) { return (i-0.45)*20; })
+                                        .attr("fill", function(d) {
+                                                        color = d3.interpolateOrRd(color_scale(d[1]));                             
+                                                        return color;
+                                                    })
+                                        .attr("width", 10)
+                                        .attr("height", 10);
                         
                         legend_countries.selectAll("text")
-                                .data(countries)
-                                .enter().append("text")
-                                    .attr("font-size", function(d) { return (d === selected_country) ? 18 : 18; })
-                                    .attr("font-weight", function(d) { return (d === selected_country) ? "bold" : "Normal"; })
-                                    .attr("x", 25)
-                                    .attr("y", function(d, i) { return i*20; })
-                                    .text(function(d) { return d; });
+                                .data(values)
+                                .enter()
+                                    .append("text")
+                                        .attr("font-size", function(d) { return (d[0] === selected_country) ? 18 : 18; })
+                                        .attr("font-weight", function(d) { return (d[0] === selected_country) ? "bold" : "Normal"; })
+                                        .attr("x", 25)
+                                        .attr("y", function(d, i) { return i*20; })
+                                        .text(function(d) { return d[0]; });
                     };
 
                     // Global variables to track already chosen countries and their corresponding maximum values of the
@@ -419,6 +424,7 @@
                     var countries = [];
                     var countries_max_values = [];
                     const color_scale = () => {}; 
+                    var values = [];
                     
                     var line = d3.line()
                                 .x(function(d) { return x_linechart(new Date(d.date)); })
@@ -465,10 +471,16 @@
                                                                    row[map_line_feature].length > 0 && // don't include if there is not data
                                                                    +row[map_line_feature] >= 0); // don't include if feature is below 0 (data cleaning)
 
+                            // Extract the maximum value of the selected country for the chosen feature
                             var features = data_new.map(row => +row[map_line_feature]);
                             var current_max = d3.max(features);
                             countries_max_values.push(current_max);
 
+                            // Needed to show the countries in the legend in descending order of the max value
+                            values.push([location, current_max]);
+                            values.sort((a, b) => d3.descending(+a[1], +b[1]));
+
+                            // Calculate the color scale with the obtained maximum values
                             var color_scale = d3.scaleLinear()
                                                 .domain(d3.extent(countries_max_values))
                                                 .range([0, 1]);
@@ -549,6 +561,7 @@
                         max_location = 0;
                         countries_max_values = [];
                         global_max = 0;
+                        values = [];
 
                         countries.forEach(d => { // Maximum values of the new feature for each country are re-computed
                                                  // necessary because the y-scale has to be re-computed
@@ -560,6 +573,10 @@
                             var features = data_new.map(row => +row[map_line_feature]);
                             var current_max = d3.max(features);
                             countries_max_values.push(current_max);
+
+                            // Needed to show the countries in the legend in descending order of the max value
+                            values.push([d, current_max]);
+                            values.sort((a, b) => d3.descending(+a[1], +b[1]));
 
                             if (current_max > new_feature_max) {
                                 max_location = d;
@@ -882,8 +899,7 @@
                     // Redraw the x-axis
                     x_scatter.domain(d3.extent(features));
                     scatter.selectAll(".x-axis-scatter")    
-                        //.transition()
-                        //.duration(1000)
+                    //.transition().duration(250)
                         .call(xAxis_scatter)
                         .call(g => g.select(".domain").remove())
                             .selectAll("text")
@@ -896,8 +912,7 @@
                     // Redraw the y-axis
                     y_scatter.domain(d3.extent(features2));
                     scatter.selectAll(".y-axis-scatter")    
-                        //.transition()
-                        //.duration(1000)
+                    //.transition().duration(250)
                         .call(yAxis_scatter)
                         .call(g => g.select(".domain").remove())
                             .selectAll("text")
@@ -910,7 +925,7 @@
                     // Draw the circles
                     scatter.append('g')
                         .selectAll("dot")
-                        .data(new_data).enter() 
+                        .data(new_data).enter()
                         .append("circle")
                             .attr("class", "circles-scatter")
                             .attr("cx", function (d) { return x_scatter(d[scatter_xfeature]); })
@@ -950,7 +965,7 @@
 
                 setTimeout(function(){ // needed so that end_date can be accessed      
                     drawScatterPlot();
-                },500); 
+                },1000); 
 
                 </script>
                 <div>
@@ -959,11 +974,7 @@
             </div>
         
             <!-- Bar plot to show the countries with the highest values for the chosen feature -->
-            <div id="barChart" style="margin-left: 1em;">
-                <div>
-                    <button onclick="reset_barChart()">Reset</button>
-                </div>
-            </div>
+            <div id="barChart" style="margin-left: 1em;"></div>
 
             <script>
 
@@ -974,7 +985,7 @@
                             .remove();
                 };
 
-                var margin_barChart = {top: 30, right: 20, bottom: 150, left: 150},
+                var margin_barChart = {top: 30, right: 20, bottom: 150, left: 200},
                     width_barChart = 1000 - margin_barChart.left - margin_barChart.right,
                     height_barChart = 1000 - margin_barChart.top - margin_barChart.bottom;
                 
@@ -994,124 +1005,136 @@
                 .attr("font-size", "30px")
                 .attr("stroke", "black")
                 .style("font-weight", "bold")
-                .text("Top-13 Countries");
+                .text("Top-15 Countries");
 
-            // x-axis label
-            var x_feature_barChart = barChart.append("text")
-                    .attr("transform", "translate(" + (width_barChart/2) + " ," + 
-                                            (height_barChart + 120) + ")")
-                    .attr("font-size", 25)
-                    .attr("font-weight", "bold")
-                    .style("text-anchor", "middle")
-                    .text(feature_names[map_line_feature]);
+                // x-axis label
+                var x_feature_barChart = barChart.append("text")
+                        .attr("transform", "translate(" + (width_barChart/2) + " ," + 
+                                                (height_barChart + 120) + ")")
+                        .attr("font-size", 25)
+                        .attr("font-weight", "bold")
+                        .style("text-anchor", "middle")
+                        .text(feature_names[map_line_feature]);
 
+                // ScaleBand for discrete x-values and scaleLinear for contiguous y-values 
+                const y_barChart = d3.scaleBand().range([0, height_barChart]).padding(0.1);
+                const x_barChart = d3.scaleLinear().range([0, width_barChart]);
 
-            // ScaleBand for discrete x-values and scaleLinear for contiguous y-values 
-            const y_barChart = d3.scaleBand().range([0, height_barChart]).padding(0.2);
-            const x_barChart = d3.scaleLinear().range([0, width_barChart]);
+                function make_x_gridlines() {
+                    // x-grid lines
+                    barChart.append("g")
+                    .attr("class","grid")
+                    .style("stroke-dasharray",("5,5"))
+                    .call(d3.axisBottom(x_barChart).ticks(10, "~s")
+                        .tickSize(height_barChart)
+                        .tickFormat(""));
+                };
 
-            function make_x_gridlines() {
-                return d3.axisBottom(x_barChart).ticks(10)
-            }; 
+                const updateXAxisTitleBarChart = () => {
+                    x_feature_barChart.text(feature_names[map_line_feature]);
+                };
 
-            const updateXAxisTitleBarChart = () => {
-                x_feature_barChart.text(feature_names[map_line_feature]);
-            };
+                var drawBarChart_axes = () => {
+                        // x-axis 
+                        barChart.append("g")
+                        .attr("class", "x-axis")
+                        .attr("transform", "translate(0," + height_barChart + ")")
+                        .call(d3.axisBottom(x_barChart).tickSize(-height_barChart))
+                        .call(g => g.select(".domain").remove())
+                        .selectAll("text")
+                            .attr("font-size", "13px")
+                            .style("text-anchor", "end")
+                            .attr("dx", "-0.5em")               
+                            .attr("dy", "0.4em")
+                            .attr("transform", function(d) {
+                                return "rotate(-45)"
+                            });
 
-            // x-grid lines
-            barChart.append("g")
-                .attr("class","grid")
-                .style("stroke-dasharray",("5,5"))
-                .call(make_x_gridlines()
-                    .tickSize(height_barChart)
-                    .tickFormat(""));
+                    // y-axis 
+                    barChart.append("g")
+                        .attr("class", "y-axis")
+                        .call(d3.axisLeft(y_barChart).tickSize(0))
+                        .selectAll("text")
+                            .attr("font-size", "13px")
+                            .style("text-anchor", "end")
+                            .attr("dx", "-0.2em")
+                            .attr("dy", ".2em")
+                            .attr("font-weight", "bold");
+                };
 
-            var drawBarChart = () => {
+                var drawBarChart = () => {
 
-                // Filter data for the given date
-                var data_barChart = data_full.filter(row => row.date === global_date && 
-                                                                   row[map_line_feature].length > 0 && // don't include if there is not data
-                                                                   +row[map_line_feature] >= 0); // don't include if feature is below 0 (data cleaning)
+                    // Filter data for the given date
+                    var data_barChart = data_full.filter(row => row.date === global_date && 
+                                                                    row[map_line_feature].length > 0 && // don't include if there is not data
+                                                                    +row[map_line_feature] >= 0); // don't include if feature is below 0 (data cleaning)
 
-                // Sort the data in descending order of the chosen feature and select top-13 countries
-                data_barChart = data_barChart.sort((a, b) => d3.descending(+a[map_line_feature], +b[map_line_feature])).slice(0,13);
-                            
-                // maps the data to the axes 
-                x_barChart.domain([0, 1.01*d3.max(data_barChart, function(d) { return +d[map_line_feature]; })]);
-                y_barChart.domain(data_barChart.map(function(d) { return d.location; }));         
+                    // Sort the data in descending order of the chosen feature and select top-13 countries
+                    data_barChart = data_barChart.sort((a, b) => d3.descending(+a[map_line_feature], +b[map_line_feature])).slice(0,15);
+                                
+                    // maps the data to the axes 
+                    x_barChart.domain([0, 1.01*d3.max(data_barChart, function(d) { return +d[map_line_feature]; })]);
+                    y_barChart.domain(data_barChart.map(function(d) { return d.location; }));         
 
-                var color_scale_barChart = d3.scaleLinear()
-                                                    .domain(d3.extent(data_barChart, function(d) { return +d[map_line_feature]; }))
-                                                    .range([0, 1]);
+                    var color_scale_barChart = d3.scaleLinear()
+                                                        .domain(d3.extent(data_barChart, function(d) { return +d[map_line_feature]; }))
+                                                        .range([0, 1]);
 
-                barChart.selectAll(".bar")
-                .data(data_barChart)
-                .enter()
-                    .append("rect")
-                    .attr("class", "bar")
-                    .attr("x", x_barChart(0)) //function(d) { return x_barChart(+d[map_line_feature]); })
-                    .attr("y", function(d) { return y_barChart(d.location); })
-                    .attr("width", function(d) {  return x_barChart(+d[map_line_feature]); })
-                    .attr("height", y_barChart.bandwidth())
-                    .attr("fill", function(d) {return d3.interpolateOrRd(color_scale_barChart(+d[map_line_feature])); });
-            
-                // y-axis 
-                barChart.append("g")
-                    .attr("class", "y-axis")
-                    .call(d3.axisLeft(y_barChart).tickSize(0))
-                    .selectAll("text")
-                        .attr("font-size", "18px")
-                        .style("text-anchor", "end")
-                        .attr("dx", "-0.2em")
-                        .attr("dy", ".2em")
-                        .attr("font-weight", "bold");
-            
-                // x-axis 
-                barChart.append("g")
-                    .attr("class", "x-axis")
-                    .attr("transform", "translate(0," + height_barChart + ")")
-                    .call(d3.axisBottom(x_barChart).tickSize(0))
-                    .call(g => g.select(".domain").remove())
-                    .selectAll("text")
-                        .attr("font-size", "18px")
-                        .style("text-anchor", "end")
-                        .attr("dx", "-0.5em")               
-                        .attr("dy", "0.4em")
-                        .attr("transform", function(d) {
-                            return "rotate(-45)"
-                        });
-            };
+                    barChart.selectAll(".bar")
+                    .data(data_barChart)
+                    .enter()
+                        .append("rect")
+                        .attr("class", "bar")
+                        .attr("x", x_barChart(0))
+                        .attr("y", function(d) { return y_barChart(d.location); })
+                        .attr("width", function(d) {  return x_barChart(+d[map_line_feature]); })
+                        .attr("height", y_barChart.bandwidth())
+                        .attr("fill", function(d) {return d3.interpolateOrRd(color_scale_barChart(+d[map_line_feature])); });
+                };
 
-            var redrawBarChart = () => {
-                reset_barChart();
-                drawBarChart();
+                var reset_barChart_axes = () => {
+                        // Redraw the x- and y-axis 
+                        barChart.selectAll(".y-axis")   
+                                .transition().duration(200)
+                                .call(d3.axisLeft(y_barChart).tickSize(0))
+                                .selectAll("text")  
+                                    .attr("font-size", "13px")
+                                    .style("text-anchor", "end")
+                                    .attr("dx", "-0.2em")
+                                    .attr("dy", ".2em")
+                                    .attr("font-weight", "bold");
+
+                    barChart.selectAll(".x-axis")   
+                                .transition().duration(250)
+                                .call(d3.axisBottom(x_barChart).tickSize(0))
+                                .call(g => g.select(".domain").remove())
+                                .selectAll("text")  
+                                    .attr("font-size", "13px")
+                                    .style("text-anchor", "end")
+                                    .attr("dx", "-0.5em")               
+                                    .attr("dy", "0.4em")
+                                    .attr("transform", function(d) {
+                                        return "rotate(-45)"
+                                    });
+
+                    d3.select("#barChart")
+                            .select("svg")      
+                            .selectAll(".grid") // or .rect or rect
+                            .remove();
+                };
+
+                var redrawBarChart = () => { // Is called when the time-slider and the map_line_feature changes
+                    reset_barChart();
+                    drawBarChart();
+                    reset_barChart_axes();
+                    make_x_gridlines();
+                };
                 
-                // Redraw the x- and y-axis 
-                barChart.selectAll(".y-axis")   
-                            .call(d3.axisLeft(y_barChart).tickSize(0))
-                            .selectAll("text")  
-                                .attr("font-size", "18px")
-                                .style("text-anchor", "end")
-                                .attr("dx", "-0.2em")
-                                .attr("dy", ".2em")
-                                .attr("font-weight", "bold");
-
-                barChart.selectAll(".x-axis")   
-                            .call(d3.axisBottom(x_barChart).tickSize(0))
-                            .call(g => g.select(".domain").remove())
-                            .selectAll("text")  
-                                .attr("font-size", "18px")
-                                .style("text-anchor", "end")
-                                .attr("dx", "-0.5em")               
-                                .attr("dy", "0.4em")
-                                .attr("transform", function(d) {
-                                    return "rotate(-45)"
-                                });
-            };
-                
-            setTimeout(function(){ // needed so that end_date can be accessed   
-                drawBarChart();
-            },500); 
+                setTimeout(function(){ // needed so that end_date can be accessed   
+                    drawBarChart();
+                    drawBarChart_axes();
+                    make_x_gridlines();
+                },1000); 
 
                 </script>
             </div>      
