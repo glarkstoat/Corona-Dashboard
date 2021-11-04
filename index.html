@@ -302,7 +302,7 @@
                         width = 1100 - margin.left - margin.right, 
                         height = 750 - margin.top - margin.bottom;
                                         
-                    var svg = d3.select("#line-chart").append("svg")
+                    var lineChart = d3.select("#line-chart").append("svg")
                             .attr("class", "line-chart")
                             .attr("width", width + margin.left + margin.right)
                             .attr("height", height + margin.top + margin.bottom)
@@ -315,7 +315,7 @@
                         .clamp(true);
                     var xAxis_line = d3.axisBottom(x_linechart).tickSize(-height);
                     
-                    svg.append("g")
+                    lineChart.append("g")
                         .attr("class", "x-axis")
                         .attr("transform", "translate(0," + height + ")")
                         .call(xAxis_line)
@@ -327,7 +327,7 @@
                                 .attr("dy", ".55em")
                                 .attr("transform", "rotate(-35)");
 
-                    svg.append("text")
+                    lineChart.append("text")
                             .attr("transform", "translate(" + (width/2-20) + "," + (height + 70 ) + ")")
                             .style("text-anchor", "middle")
                             .attr("font-size", 25)
@@ -339,7 +339,7 @@
                     var yAxis_line = d3.axisLeft(y_linechart).tickSize(-width+10);
                                      
                     // y-axis tick labels
-                    svg.append("g")
+                    lineChart.append("g")
                         .attr("class", "y-axis")
                         .call(yAxis_line)
                         .call(g => g.select(".domain").remove())
@@ -350,7 +350,7 @@
                                 .attr("dy", "-0.5em")
                                 .attr("transform", "rotate(-35)");
 
-                    y_feature = svg.append("text")
+                    y_feature = lineChart.append("text")
                                 .attr("transform", "translate(" + -95 + "," + (height/2) + ")rotate(-90)")
                                 .style("text-anchor", "middle")
                                 .attr("font-size", 25)
@@ -363,7 +363,7 @@
                     };
                     updateLineYAxisTitle();
 
-                    var legend = svg.append("g")
+                    var legend = lineChart.append("g")
                                     .attr("class", "legend")
                                     .attr("width", 200)
                                     .attr("height", 200)
@@ -433,7 +433,7 @@
                     
                     // Adds the line to the line chart for each country
                     const addLine = (data, color) => {
-                        svg.append("path")
+                        lineChart.append("path")
                         .datum(data)
                         .attr("class", "line")
                         .attr("stroke", color)
@@ -452,7 +452,7 @@
 
                         // Update the xaxis domain with end_date taken from the csv-file
                         x_linechart.domain([start_date, end_date]);
-                        svg.selectAll(".x-axis")
+                        lineChart.selectAll(".x-axis")
                             .call(xAxis_line)
                             .call(g => g.select(".domain").remove())
                             .selectAll("text")  
@@ -496,7 +496,7 @@
                                     global_max_location = location;
 
                                     y_linechart.domain([0, global_max]);
-                                    svg.selectAll(".y-axis")    
+                                    lineChart.selectAll(".y-axis")    
                                         .call(yAxis_line)
                                         .call(g => g.select(".domain").remove())
                                         .selectAll("text")  
@@ -518,7 +518,7 @@
                                     global_max_location = location;
 
                                     y_linechart.domain([0, global_max]);
-                                    svg.selectAll(".y-axis")    
+                                    lineChart.selectAll(".y-axis")    
                                         .call(yAxis_line)
                                         .call(g => g.select(".domain").remove())
                                         .selectAll("text")  
@@ -593,7 +593,7 @@
                         drawLegend();
 
                         y_linechart.domain([0, new_feature_max]);
-                        svg.selectAll(".y-axis")   
+                        lineChart.selectAll(".y-axis")   
                             .call(yAxis_line)
                             .call(g => g.select(".domain").remove())
                             .selectAll("text")  

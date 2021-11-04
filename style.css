@@ -136,7 +136,7 @@ circle:hover {
 
 .grid line {
   stroke: rgb(139, 136, 136);
-  stroke-opacity: 0.3;
+  stroke-opacity: 0.4;
   shape-rendering: crispEdges;
 }
 
