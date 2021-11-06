@@ -1,8 +1,10 @@
-/*
 body {
-  background-color: #c45252;
+  background-color: rgba(212, 212, 212, 0.698);
 }
-*/
+
+label {
+  font-weight: bold
+}
 
 .pull-right{
   width: 400px;
@@ -10,10 +12,17 @@ body {
 
 .wrapper {
   display: grid;
-  grid-template-columns: 1000px 1000px;
-  column-gap: 430px;
-  row-gap: 10px;
-  }
+  grid-template-columns: 50% 50%;
+  column-gap: 200px;
+  row-gap: 0px;
+  background-color: rgba(212, 212, 212, 0.698);
+}
+
+.wrapper-div {
+  height: 1200px;
+  width: 110%;
+  /*background-color: powderblue;*/
+}
 
 h1 {
   display: flex;
@@ -21,7 +30,7 @@ h1 {
   justify-content: center;
   text-align: center;
   display: block;
-  font-size: 5em;
+  background-color: rgba(212, 212, 212, 0.698);
 }
 
 .ticks {
@@ -47,7 +56,7 @@ h1 {
 }
 
 .track-inset {
-  stroke: rgb(235, 229, 229);
+  stroke: rgba(255, 255, 255, 0.876);
   stroke-width: 15px;
 }
 
@@ -97,12 +106,6 @@ pointer-events: all;
   opacity : 0.4;
 }
 
-.grid line {
-  stroke: rgb(230, 228, 226);
-  stroke-opacity: 0.2;
-  shape-rendering: crispEdges;
-}
-
 .grid path {
   stroke-width: 0;
 }
@@ -112,7 +115,7 @@ pointer-events: all;
 }
 
 .line-chart {
-  background-color: #dadadaf6;
+  background-color: rgba(212, 212, 212, 0);
 }
 
 circle {
@@ -136,7 +139,7 @@ circle:hover {
 
 .grid line {
   stroke: rgb(139, 136, 136);
-  stroke-opacity: 0.4;
+  stroke-opacity: 0.5;
   shape-rendering: crispEdges;
 }
 
