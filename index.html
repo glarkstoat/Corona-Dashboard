@@ -1,16 +1,16 @@
 <!--
                 TODOS:
-                .) Improve initial view of line chart. Show lines of top-5 coutries for the chosen feature
-                .) If new feature is selected, show lines of top-5 coutries for the chosen feature (instead of the previously selected countries)
-                .) Logarithmic scale for scatter plot?
-                .) CSS Bootstrap?
-                .) problems with transitions where axis-lines appear during the transition
+                .) Play button for time slider
+
                 .) Tooltips under/beneath the charts to explain how to use them 
                 .) decide on background color/s
-                .) Play button for time slider
-                .) Display current values for each country on the right side of the bar (makes it easier to interpret the length of the bars)
                 .) Remove Antartica
                 .) Gibraltar weird values for percentage_of_people_vaccinated (over 100%)
+                .) Make tooltips of map nicer
+                .) Try if map works without the zoom-in function
+                .) Logarithmic scale for scatter plot?
+                .) CSS Bootstrap?
+
 -->
 
 <html>
@@ -49,7 +49,7 @@
             <div class="wrapper-div"> <!-- Time slider to control map and scatter plot -->
                 <div class="pull-right" style="margin-left: 10em;">
                     <label for="features">Choose a map-feature:</label>
-                    <select class="form-control" id="map-line-select">
+                    <select class="form-control" id="map-line-select">                      
                         <option value='total_cases'> Total Cases </option>
                         <option value='total_cases_per_million'> Total Cases per million </option>
                         <option value='new_cases_smoothed'> New Cases </option>
@@ -180,19 +180,48 @@
                         },50);
                     </script>
                 </div>
-        
+                
+                <button id="play-button">Play</button>
+                    <script>
+
+                        var playButton = d3.select("#play-button");
+
+                        playButton.on("click", function () {
+                            var button = d3.select(this);
+                            if (button.text() == "Pause") {
+                                // interrupt loop
+                                button.text("Play");
+                            } 
+                            else if (button.text() == "Play" ) {
+                                while (global_date <= end_date) {
+                                    // start from start_date
+                                    // global_date += 1
+                                    // redrawLine();
+                                    // redrawBarChart();
+                                }
+                                if (global_date == end_date) {
+                                    // continue from global_date to end_date
+                                    // redrawLine();
+                                    // redrawBarChart();
+                                }
+                                button.text("Pause");
+                            }
+                            });
+
+                    </script>
+
                 <!-- Time slider for the map as well as the scatter plot -->
-                <svg width="1200" height="100" id="slider_map"></svg> 
+                <svg width="1000" height="100" id="slider_map"></svg> 
                 <script>
 
                     var svg = d3.select("#slider_map"),
-                        margin_slider = {right: 20, left: 20},
+                        margin_slider = {right: 20, left: 0},
                         width_slider = 900 - margin_slider.left - margin_slider.right,
                         height_slider = +svg.attr("height");
 
                     var slider = svg.append("g")
                         .attr("class", "slider")
-                        .attr("transform", "translate(" + (250) + "," + (height_slider / 2) + ")");
+                        .attr("transform", "translate(" + (50) + "," + (height_slider / 2) + ")");
     
                     // Contains the selected date
                     var nameContainer = slider.append("text")
@@ -216,10 +245,10 @@
                             .attr("class", "track-overlay")
                             .call(d3.drag()
                                 .on("drag", function() {    updateMap(d3.mouse(this)[0]);
-                                                            drawScatterPlot();
+                                                            //drawScatterPlot();
                                                             redrawBarChart(); })
                                 .on("end", function() {     updateMap(d3.mouse(this)[0]);
-                                                            drawScatterPlot();
+                                                            //drawScatterPlot();
                                                             redrawBarChart(); })); 
 
                     var handle = slider.insert("circle", ".track-overlay")
@@ -268,7 +297,12 @@
                     },1000);  // timeout for loading of data_full
 
                 </script>
+
+
+
+
             </div>
+
 
         
         
@@ -281,6 +315,7 @@
 <div id="barChart" style="margin-left: 1em;"></div>
 
 <script>
+    var data_barChart = [];
 
     var reset_barChart = () => {
             d3.select("#barChart")
@@ -374,7 +409,7 @@
     var drawBarChart = () => {
 
         // Filter data for the given date
-        var data_barChart = data_full.filter(row => row.date === global_date && 
+        data_barChart = data_full.filter(row => row.date === global_date && 
                                                         row[map_line_feature].length > 0 && // don't include if there is not data
                                                         +row[map_line_feature] >= 0); // don't include if feature is below 0 (data cleaning)
 
@@ -425,7 +460,7 @@
                         .attr("font-weight", "bold");
 
         barChart.selectAll(".x-axis")   
-                    .transition().duration(250)
+                    //.transition().duration(250)
                     .call(d3.axisBottom(x_barChart).tickSize(0))
                     .call(g => g.select(".domain").remove())
                     .selectAll("text")  
@@ -443,25 +478,40 @@
                 .remove();
     };
 
-    var redrawBarChart = () => { // Is called when the time-slider and the map_line_feature changes
+    var redrawBarChart = () => { // Is called when the time-slider or the map_line_feature changes
         reset_barChart();
         drawBarChart();
         reset_barChart_axes();
         make_x_gridlines();
+
+        countries = [];
+        data_barChart.slice(0,5).forEach(function(d) {
+            countries.push(d.location);
+        });
+
+        redrawLine();
+
     };
     
     setTimeout(function(){ // needed so that end_date can be accessed   
         drawBarChart();
         drawBarChart_axes();
         make_x_gridlines();
+
+        countries = [];
+        data_barChart.slice(0,5).forEach(function(d) {
+            countries.push(d.location);
+        });
+
+        redrawLine();
     },1000); 
 
     </script>
       
             <div id="line-chart">
                 <script>
-                    // Reset functions are generally called if new data is loaded
-                    // in order to clear the plot
+
+                    // Called when pressing the "reset"-button beneath the line chart
                     var reset_hard_line = () => {
                         global_max = 0;
                         countries = [];
@@ -757,6 +807,7 @@
                                                  // necessary because the y-scale has to be re-computed
 
                             var data_new = data_full.filter(row => row.location === d && 
+                                                                   row.date <= global_date && 
                                                                    row[map_line_feature].length > 0 &&
                                                                    +row[map_line_feature] >= 0);
                                                                    
@@ -782,6 +833,18 @@
                                                 .range([0, 1]);
                         drawLegend();
 
+                        // Update the xaxis domain with end_date taken from the csv-file
+                        x_linechart.domain([start_date, new Date(global_date)]);
+                        lineChart.selectAll(".x-axis")
+                            .call(xAxis_line)
+                            .call(g => g.select(".domain").remove())
+                            .selectAll("text")  
+                                .attr("font-size", "15px")
+                                .style("text-anchor", "end")
+                                .attr("dx", "-.1em")
+                                .attr("dy", ".55em")
+                                .attr("transform", "rotate(-35)");
+
                         y_linechart.domain([0, new_feature_max]);
                         lineChart.selectAll(".y-axis")   
                             .call(yAxis_line)
@@ -796,23 +859,19 @@
                         countries.forEach((d, i) => {
                             color = d3.interpolateOrRd(color_scale(countries_max_values[i]));                               
                             data_new = data_full.filter(row => row.location === d && 
+                                                               row.date <= global_date &&
                                                                    row[map_line_feature].length > 0 &&
                                                                    +row[map_line_feature] >= 0);
                             addLine(data_new, color);
-
                         });
                     };
                 </script>
           
-          
-
             <!-- Reset button beneath the line chart to reset it completely -->
             <div>
                 <button onclick="reset_hard_line()">Reset</button>
             </div>
         </div>
-
-
         </div>
 
         <!-- Drowdown menus for selecting the x- and y-features for the scatter plot -->

@@ -74,6 +74,24 @@ h1 {
   stroke-width: 1.5px;
 }
 
+#play-button {
+  background: #f08080;
+  padding-right: 2px;
+  border-radius: 0px;
+  border: none;
+  color: white;
+  margin: 0px;
+  margin-left: 150px;
+  padding: 0 12px;
+  width: 60px;
+  cursor: pointer;
+  height: 30px;
+}
+
+#play-button:hover {
+  background-color: #942525ef;
+}
+
 .line {
   fill: none;
   stroke-width: 4;
