@@ -173,19 +173,23 @@ function () {
         // If country is clicked, new line for chosen country is drawn
         drawLineChart(d.properties.name);      
         
+        /*
         var centroid = this.path.centroid(d);
         x = centroid[0];
         y = centroid[1];
         k = this.properties.zoomFactor;
         this._.centered = d;
-      } else {
-        this._.centered = null;
-      }
-
+        */
+      } 
+      //else {
+        //this._.centered = null;
+      //}
+      /*
       this.svg.selectAll('path.unit').classed('active', this._.centered && function (_) {
         return _ === _this._.centered;
       });
       this.svg.selectAll('g.zoom').transition().duration(750).attr('transform', "translate(".concat(x0, ", ").concat(y0, ")scale(").concat(k, ")translate(-").concat(x, ", -").concat(y, ")"));
+      */
     }
     /**
      * Load geo data once here and draw map. Call update at the end.
