@@ -17,7 +17,7 @@
     cursor: pointer;
     fill: #ccc;
     opacity: 1;
-    stroke: rgba(0, 0, 0, 0.774);
+    stroke: #000000c5;
     stroke-width: 1.2px; }
 
 .d3-geomap .legend-bg {

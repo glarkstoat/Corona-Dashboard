@@ -301,6 +301,7 @@ function (_Geomap) {
   }, {
     key: "update",
     value: function update(new_data) {
+
       var self = this;
 
       // If new_data is given, old data is overwritten and update will be made based on new data
@@ -326,7 +327,7 @@ function (_Geomap) {
           if (self.properties.duration) unit.transition().duration(self.properties.duration).style('fill', fill);else unit.style('fill', fill); // New title with column and value.
 
           val = self.properties.format(val);
-          unit.select('title').text("".concat(text, "\n\n").concat(self.properties.column, ": ").concat(val));
+          unit.select('title').text("".concat(text, "\n").concat(feature_names[self.properties.column], ": ").concat(val));
         }
       });
       if (self.properties.legend) self.drawLegend(self.properties.legend); // Make sure postUpdate function is run if set.

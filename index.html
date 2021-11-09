@@ -1,9 +1,10 @@
 <!--
                 TODOS:
                 .) Issue with data loading (Oct 16th)
+                .) Issue with missing data (countries appear gray and tooltip displays some weird values)
+                .) Can I make it more efficient? (data loading e.g.)
 
                 .) Tooltips under/beneath the charts to explain how to use them 
-                .) Make tooltips of map nicer
                 .) Logarithmic scale for scatter plot?
                 .) CSS Bootstrap?
 -->
@@ -142,10 +143,11 @@
                         var map = d3.choropleth()
                                 .geofile('topojson/world/countries.json')
                                 .column('total_cases')
-                                .duration(10)
+                                .duration(100)
                                 .scale(280) 
                                 .height(900)
                                 .width(1450)
+                                .format(d3.format(".5s"))
                                 .legend(true)
                                 .zoomFactor(1)
                                 .unitId('iso3');
@@ -266,10 +268,8 @@
                             .attr("class", "track-overlay")
                             .call(d3.drag()
                                 .on("drag", function() {    updateMap(d3.mouse(this)[0]);
-                                                            //drawScatterPlot();
                                                             redrawBarChart(); })
                                 .on("end", function() {     updateMap(d3.mouse(this)[0]);
-                                                            //drawScatterPlot();
                                                             redrawBarChart(); })); 
 
                     var handle = slider.insert("circle", ".track-overlay")
@@ -318,7 +318,7 @@
                                 .attr("text-anchor", "middle")
                                 .text(function(d) { return formatDate_slider(d); });
                         
-                    },2000);  // timeout for loading of data_full
+                    },3000);  // timeout for loading of data_full
                 </script>
             </div>    
 
@@ -520,7 +520,7 @@
                             });
 
                             redrawLine();
-                        },2000); 
+                        },3000); 
                     </script>
       
                 <div id="line-chart">
