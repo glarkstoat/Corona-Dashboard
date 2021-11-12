@@ -96,13 +96,13 @@ h1 {
 
 .line {
   fill: none;
-  stroke-width: 4;
+  stroke-width: 2;
   opacity: 0.45;
 }
 
 .line:hover {
   opacity: 1;  
-  stroke-width: 7;
+  stroke-width: 5;
 }
 
 .overlay {
