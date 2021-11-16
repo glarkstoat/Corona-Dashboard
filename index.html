@@ -367,7 +367,7 @@
                     </script>
 
                 <!-- Time slider for map, line chart, bar chart and scatter plot -->
-                <svg width="1000" height="100" id="time_slider"></svg> 
+                <svg width="1300" height="100" id="time_slider"></svg> 
                 <script>
 
                     var svg = d3.select("#time_slider"),
@@ -377,7 +377,7 @@
 
                     var slider = svg.append("g")
                         .attr("class", "slider")
-                        .attr("transform", "translate(" + (50) + "," + (height_slider / 2) + ")");
+                        .attr("transform", "translate(" + (290) + "," + (height_slider / 2) + ")");
     
                     // Contains the selected date
                     var nameContainer = slider.append("text")
@@ -489,7 +489,7 @@
                                     .attr("height", height_barChart + margin_barChart.top + margin_barChart.bottom)
                                 .append("g")
                                     .attr("transform",
-                                        "translate(" + margin_barChart.left + "," + margin_barChart.top + ")")
+                                        "translate(" + margin_barChart.left + "," + margin_barChart.top + ")");
 
                         // Add a title
                         barChart.append("text")
@@ -1353,7 +1353,7 @@
                         };
                         setTimeout(function(){ // needed so that end_date can be accessed      
                             drawScatterPlot();
-                        },2000); 
+                        },3000); 
 
                     </script>
 
