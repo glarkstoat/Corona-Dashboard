@@ -150,7 +150,7 @@ circle:hover {
 
 .bar {
   /*fill: rgb(21, 90, 4); */
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
 .bar:hover {
@@ -159,7 +159,7 @@ circle:hover {
 
 .grid line {
   stroke: rgb(139, 136, 136);
-  stroke-opacity: 0.5;
+  stroke-opacity: 0.4;
   shape-rendering: crispEdges;
 }
 

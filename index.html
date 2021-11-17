@@ -92,6 +92,7 @@
                         var feature_names = {"total_cases": "Total Cases",
                                                 "total_cases_per_million": "Total Cases per Million",
                                                 "new_cases_smoothed": "New Cases",
+                                                "new_cases": "New Cases",
                                                 "new_cases_smoothed_per_million":"New Cases per Million",
                                                 "total_deaths": "Total Deaths",
                                                 "total_deaths_per_million": "Total Deaths per Million",
@@ -518,7 +519,7 @@
                             barChart.append("g")
                             .attr("class","grid")
                             .style("stroke-dasharray",("5,5"))
-                            .call(d3.axisBottom(x_barChart).ticks(10, "~s")
+                            .call(d3.axisBottom(x_barChart).ticks(5, "~s")
                                 .tickSize(height_barChart)
                                 .tickFormat(""));
                         };
@@ -532,7 +533,7 @@
                                 barChart.append("g")
                                 .attr("class", "x-axis")
                                 .attr("transform", "translate(0," + height_barChart + ")")
-                                .call(d3.axisBottom(x_barChart).tickSize(-height_barChart))
+                                .call(d3.axisBottom(x_barChart).tickSize(-height_barChart).tickFormat(x => d3.format(".2s")(x)).ticks(5, "~s"))
                                 .call(g => g.select(".domain").remove())
                                 .selectAll("text")
                                     .attr("font-size", "13px")
@@ -610,7 +611,7 @@
 
                             barChart.selectAll(".x-axis")   
                                         //.transition().duration(250)
-                                        .call(d3.axisBottom(x_barChart).tickSize(0))
+                                        .call(d3.axisBottom(x_barChart).tickSize(0).tickFormat(x => d3.format(".2s")(x)).ticks(5, "~s"))
                                         .call(g => g.select(".domain").remove())
                                         .selectAll("text")  
                                             .attr("font-size", "13px")
@@ -726,7 +727,7 @@
                         
                         var y_linechart = d3.scaleLinear()
                             .range([height, 0]);
-                        var yAxis_line = d3.axisLeft(y_linechart).tickSize(-width+10);
+                        var yAxis_line = d3.axisLeft(y_linechart).tickSize(-width+10).tickFormat(x => d3.format(".2s")(x)).ticks(6, "~s");
                                         
                         // y-axis tick labels
                         lineChart.append("g")
@@ -1132,9 +1133,9 @@
                                     .attr("transform",
                                         "translate(" + margin_scatter.left + "," + margin_scatter.top + ")")
 
-                        var x_scatter = d3.scaleLinear()
+                        var x_scatter = d3.scaleLog()
                             .range([0, width_scatter]);
-                        var xAxis_scatter = d3.axisBottom(x_scatter).tickSize(-height_scatter);
+                        var xAxis_scatter = d3.axisBottom(x_scatter).tickSize(-height_scatter).tickFormat(x => d3.format(".2s")(x)).ticks(3, "~s");
                                                                         
                         scatter.append("g")
                             .attr("class", "x-axis-scatter")
@@ -1155,9 +1156,9 @@
                                 .style("text-anchor", "middle")
                                 .text(feature_names[scatter_xfeature]);
                         
-                        var y_scatter = d3.scaleLinear()
+                        var y_scatter = d3.scaleLog()
                             .range([height_scatter, 0]);
-                        var yAxis_scatter = d3.axisLeft(y_scatter).tickSize(-width_scatter-margin_scatter.top+10);
+                        var yAxis_scatter = d3.axisLeft(y_scatter).tickSize(-width_scatter-margin_scatter.top+10).tickFormat(x => d3.format(".2s")(x)).ticks(3, "~s");
 
                         scatter.append("g")
                             .attr("class", "y-axis-scatter")
