@@ -1,12 +1,6 @@
 <!--
                 TODOS:
-                .) Fixing sclaing issue with the zoom
-                .) Issue with data loading (Oct 16th)
-                .) Can I make it more efficient? (data loading e.g.)
-
                 .) Tooltips under/beneath the charts to explain how to use them 
-                .) Logarithmic scale for scatter plot?
-                .) CSS Bootstrap?
 -->
 
 <html>
@@ -45,7 +39,7 @@
     
         <div class="wrapper">
             <div class="wrapper-div"> <!-- Time slider to control map and scatter plot -->
-                <div class="pull-right" style="margin-left: 10em;">
+                <div class="pull-right" style="margin-top: 40px; margin-left: 10em;">
                     <label for="features">Choose a map-feature:</label>
                     <select class="form-control" id="map-line-select">                      
                         <option value='total_cases'> Total Cases </option>
@@ -92,6 +86,7 @@
                         var feature_names = {"total_cases": "Total Cases",
                                                 "total_cases_per_million": "Total Cases per Million",
                                                 "new_cases_smoothed": "New Cases",
+                                                "new_cases": "New Cases",
                                                 "new_cases_smoothed_per_million":"New Cases per Million",
                                                 "total_deaths": "Total Deaths",
                                                 "total_deaths_per_million": "Total Deaths per Million",
@@ -147,7 +142,7 @@
                                 .column('total_cases')
                                 .duration(100)
                                 .scale(280)
-                                .height(900)
+                                .height(850)
                                 .width(1450)
                                 .format(d3.format(".5s"))
                                 .legend(true)
@@ -177,207 +172,31 @@
                         });
                     </script>
                 </div>
-                
-                <!-- Shows animation of evolution of data in bar, line and map chart. -->
-                <button id="play-button">Play</button>
-                    <script>
-                        var counter_dates = 0; // counts which date to choose
 
-                        var update_all_charts = () => {
-                            // Updates map, line chart and bar chart at once
-                            // Should prevent redundant data-loading.
-
-                            reset_barChart();
-
-                            /* ---------- drawbarchart ------------ */
-
-                            // Filter data for the given date
-                            data_barChart = data_full.filter(row => row.date === global_date && 
-                                                                    row[global_feature].length > 0 && // don't include if there is not data
-                                                                    +row[global_feature] >= 0); // don't include if feature is below 0 (data cleaning)
-
-                            // Sort the data in descending order of the chosen feature and select top-13 countries
-                            data_barChart_top20 = data_barChart.sort((a, b) => d3.descending(+a[global_feature], +b[global_feature])).slice(0,20);
-                                        
-                            // maps the data to the axes 
-                            x_barChart.domain([0, 1.01*d3.max(data_barChart_top20, function(d) { return +d[global_feature]; })]);
-                            y_barChart.domain(data_barChart_top20.map(function(d) { return d.location; }));         
-
-                            var color_scale_barChart = d3.scaleLinear()
-                                                                .domain(d3.extent(data_barChart_top20, function(d) { return +d[global_feature]; }))
-                                                                .range([0, 1]);
-
-                            barChart.selectAll(".bar")
-                            .data(data_barChart_top20)
-                            .enter()
-                                .append("rect")
-                                .attr("class", "bar")
-                                .attr("x", x_barChart(0))
-                                .attr("y", function(d) { return y_barChart(d.location); })
-                                .attr("width", function(d) {  return x_barChart(+d[global_feature]); })
-                                .attr("height", y_barChart.bandwidth())
-                                .attr("fill", function(d) {return d3.interpolateOrRd(color_scale_barChart(+d[global_feature])); });
-
-                            barChart.selectAll(".bar-values")
-                                        .data(data_barChart_top20)
-                                        .enter()
-                                            .append("text")
-                                                .attr("class", "bar-values")   
-                                                .attr("font-size", 13)
-                                                .attr("font-weight", "Normal")
-                                                .attr("x", function(d) { return x_barChart(+d[global_feature]) + 10; })
-                                                .attr("y", function(d) { return y_barChart(d.location) + 14; })
-                                                .text(function(d) { return d3.format(".4s")(+d[global_feature]); });
-
-                            /* end ---------- drawbarchart ------------ end */
-                            
-                            reset_barChart_axes();
-                            make_x_gridlines();
-
-                            // Take the top-5 countries form the bar chart and plot them in line plot
-                            countries = [];
-                            data_barChart_top20.slice(0,5).forEach(function(d) {
-                                countries.push(d.location);
-                            });
-
-                            /* ---------- redrawLine ------------ */
-
-                            reset_soft_line(); // removes all lines from line chart
-
-                            // Reset global values for the new feature
-                            new_feature_max = 0;
-                            max_location = 0;
-                            countries_max_values = [];
-                            global_max = 0;
-                            values = [];
-
-                            countries.forEach(d => { // Maximum values of the new feature for each country are re-computed
-                                                    // necessary because the y-scale has to be re-computed
-
-                                var data_new = data_full.filter(row => row.location === d && 
-                                                                    row.date <= global_date && 
-                                                                    row[global_feature].length > 0 &&
-                                                                    +row[global_feature] >= 0);
-                                                                    
-                                var features = data_new.map(row => +row[global_feature]);
-                                var current_max = d3.max(features);
-                                countries_max_values.push(current_max);
-
-                                // Needed to show the countries in the legend in descending order of the max value
-                                values.push([d, current_max]);
-                                values.sort((a, b) => d3.descending(+a[1], +b[1]));
-
-                                if (current_max > new_feature_max) {
-                                    max_location = d;
-                                    new_feature_max = current_max;
-                                }
-                            });
-
-                            // Is needed by DrawLineChart to plot the new country correctly
-                            global_max = new_feature_max;
-
-                            var color_scale = d3.scaleLinear()
-                                                    .domain(d3.extent(countries_max_values))
-                                                    .range([0, 1]);
-                            drawLegend();
-
-                            // Update the xaxis domain with end_date taken from the csv-file
-                            x_linechart.domain([start_date, new Date(global_date)]);
-                            lineChart.selectAll(".x-axis")
-                                .call(xAxis_line)
-                                .call(g => g.select(".domain").remove())
-                                .selectAll("text")  
-                                    .attr("font-size", "15px")
-                                    .style("text-anchor", "end")
-                                    .attr("dx", "-.1em")
-                                    .attr("dy", ".55em")
-                                    .attr("transform", "rotate(-35)");
-
-                            y_linechart.domain([0, new_feature_max]);
-                            lineChart.selectAll(".y-axis")   
-                                .call(yAxis_line)
-                                .call(g => g.select(".domain").remove())
-                                .selectAll("text")  
-                                                .attr("font-size", "15px")
-                                                .style("text-anchor", "end")
-                                                .attr("dx", "-.5em")
-                                                .attr("dy", "-0.5em")
-                                                .attr("transform", "rotate(-35)");
-
-                            countries.forEach((d, i) => {
-                                color = d3.interpolateOrRd(color_scale(countries_max_values[i]));                               
-                                data_new = data_full.filter(row => row.location === d && 
-                                                                    row.date <= global_date &&
-                                                                    row[global_feature].length > 0 &&
-                                                                    +row[global_feature] >= 0);
-                                addLine(data_new, color);
-                            });
-                            
-                            /* end ---------- redrawLine ------------ end */
-
-                            /* ---------- Slider and Map ------------ */
-
-                            handle.attr("cx", x_slider(new Date(global_date)));
-                            showName(formatDate_slider(new Date(global_date)));
-
-                            // Updates the map with the data corresponding to the chosen date
-                            map.update(data_barChart);
-
-                            /* end ---------- Slider and Map ------------ end */
-
-                        };
-
-                        var update = function(){ // Is called iteratively
-
-                            if (global_date < formatDate(end_date)) { // Either at the start of the slider or in between the start and the end
-                                global_date = dates[++counter_dates];
-
-                                update_all_charts();
-                            }
-                            else if (global_date == formatDate(end_date)) {
-                                if (counter_dates <= 0) { // Inital case where nothing happended yet (play button was not clicked yet) and slider is on end_date by default
-                                    global_date = dates[counter_dates]; // resets global_date to start_date
-
-                                    update_all_charts();
-                                }
-                                else { // Case where slider is at the end_date but the play button was clicked before 
-                                    resetTimer();
-                                    counter_dates = 0; // Resets the counter to 0 once, one full animation was completed
-                                }  
-                            }
-                        };
-
-                        function resetTimer() {
-                            clearInterval(timer);
-                            playButton.text("Play");
-                        }
-
-                        var playButton = d3.select("#play-button");
-
-                        playButton.on("click", function () {
-                            if (playButton.text() == "Pause") {
-                                resetTimer(); // interrupt loop
-                            } 
-                            else if (playButton.text() == "Play" ) {
-                                timer = setInterval(update, 50);
-                                playButton.text("Pause");
-                            }
-                        });
-
-                    </script>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-2">
+                            <button id="play-button">Play</button>
+                        </div>
+                        <div class="col">
+                            <div class="row">
+                                <svg width="950" height="80" id="time_slider"></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Time slider for map, line chart, bar chart and scatter plot -->
-                <svg width="1300" height="100" id="time_slider"></svg> 
                 <script>
 
                     var svg = d3.select("#time_slider"),
-                        margin_slider = {right: 20, left: 0},
+                        margin_slider = {right: 0, left: 0},
                         width_slider = 900 - margin_slider.left - margin_slider.right,
                         height_slider = +svg.attr("height");
 
                     var slider = svg.append("g")
                         .attr("class", "slider")
-                        .attr("transform", "translate(" + (290) + "," + (height_slider / 2) + ")");
+                        .attr("transform", "translate(" + (10) + "," + (height_slider / 2) + ")");
     
                     // Contains the selected date
                     var nameContainer = slider.append("text")
@@ -455,6 +274,193 @@
                         
                     },3000);  // timeout for loading of data_full
                 </script>
+                
+                <!-- Play button functionality: Shows animation of evolution of data in bar, line and map chart. -->
+                <script>
+                    var counter_dates = 0; // counts which date to choose
+
+                    var update_all_charts = () => {
+                        // Updates map, line chart and bar chart at once
+                        // Should prevent redundant data-loading.
+
+                        reset_barChart();
+
+                        /* ---------- drawbarchart ------------ */
+
+                        // Filter data for the given date
+                        data_barChart = data_full.filter(row => row.date === global_date && 
+                                                                row[global_feature].length > 0 && // don't include if there is not data
+                                                                +row[global_feature] >= 0); // don't include if feature is below 0 (data cleaning)
+
+                        // Sort the data in descending order of the chosen feature and select top-13 countries
+                        data_barChart_top20 = data_barChart.sort((a, b) => d3.descending(+a[global_feature], +b[global_feature])).slice(0,20);
+                                    
+                        // maps the data to the axes 
+                        x_barChart.domain([0, 1.01*d3.max(data_barChart_top20, function(d) { return +d[global_feature]; })]);
+                        y_barChart.domain(data_barChart_top20.map(function(d) { return d.location; }));         
+
+                        var color_scale_barChart = d3.scaleLinear()
+                                                            .domain(d3.extent(data_barChart_top20, function(d) { return +d[global_feature]; }))
+                                                            .range([0, 1]);
+
+                        barChart.selectAll(".bar")
+                        .data(data_barChart_top20)
+                        .enter()
+                            .append("rect")
+                            .attr("class", "bar")
+                            .attr("x", x_barChart(0))
+                            .attr("y", function(d) { return y_barChart(d.location); })
+                            .attr("width", function(d) {  return x_barChart(+d[global_feature]); })
+                            .attr("height", y_barChart.bandwidth())
+                            .attr("fill", function(d) {return d3.interpolateOrRd(color_scale_barChart(+d[global_feature])); });
+
+                        barChart.selectAll(".bar-values")
+                                    .data(data_barChart_top20)
+                                    .enter()
+                                        .append("text")
+                                            .attr("class", "bar-values")   
+                                            .attr("font-size", 13)
+                                            .attr("font-weight", "Normal")
+                                            .attr("x", function(d) { return x_barChart(+d[global_feature]) + 10; })
+                                            .attr("y", function(d) { return y_barChart(d.location) + 14; })
+                                            .text(function(d) { return d3.format(".4s")(+d[global_feature]); });
+
+                        /* end ---------- drawbarchart ------------ end */
+                        
+                        reset_barChart_axes();
+                        make_x_gridlines();
+
+                        // Take the top-5 countries form the bar chart and plot them in line plot
+                        countries = [];
+                        data_barChart_top20.slice(0,5).forEach(function(d) {
+                            countries.push(d.location);
+                        });
+
+                        /* ---------- redrawLine ------------ */
+
+                        reset_soft_line(); // removes all lines from line chart
+
+                        // Reset global values for the new feature
+                        new_feature_max = 0;
+                        max_location = 0;
+                        countries_max_values = [];
+                        global_max = 0;
+                        values = [];
+
+                        countries.forEach(d => { // Maximum values of the new feature for each country are re-computed
+                                                // necessary because the y-scale has to be re-computed
+
+                            var data_new = data_full.filter(row => row.location === d && 
+                                                                row.date <= global_date && 
+                                                                row[global_feature].length > 0 &&
+                                                                +row[global_feature] >= 0);
+                                                                
+                            var features = data_new.map(row => +row[global_feature]);
+                            var current_max = d3.max(features);
+                            countries_max_values.push(current_max);
+
+                            // Needed to show the countries in the legend in descending order of the max value
+                            values.push([d, current_max]);
+                            values.sort((a, b) => d3.descending(+a[1], +b[1]));
+
+                            if (current_max > new_feature_max) {
+                                max_location = d;
+                                new_feature_max = current_max;
+                            }
+                        });
+
+                        // Is needed by DrawLineChart to plot the new country correctly
+                        global_max = new_feature_max;
+
+                        var color_scale = d3.scaleLinear()
+                                                .domain(d3.extent(countries_max_values))
+                                                .range([0, 1]);
+                        drawLegend();
+
+                        // Update the xaxis domain with end_date taken from the csv-file
+                        x_linechart.domain([start_date, new Date(global_date)]);
+                        lineChart.selectAll(".x-axis")
+                            .call(xAxis_line)
+                            .call(g => g.select(".domain").remove())
+                            .selectAll("text")  
+                                .attr("font-size", "15px")
+                                .style("text-anchor", "end")
+                                .attr("dx", "-.1em")
+                                .attr("dy", ".55em")
+                                .attr("transform", "rotate(-35)");
+
+                        y_linechart.domain([0, new_feature_max]);
+                        lineChart.selectAll(".y-axis")   
+                            .call(yAxis_line)
+                            .call(g => g.select(".domain").remove())
+                            .selectAll("text")  
+                                            .attr("font-size", "15px")
+                                            .style("text-anchor", "end")
+                                            .attr("dx", "-.5em")
+                                            .attr("dy", "-0.5em")
+                                            .attr("transform", "rotate(-35)");
+
+                        countries.forEach((d, i) => {
+                            color = d3.interpolateOrRd(color_scale(countries_max_values[i]));                               
+                            data_new = data_full.filter(row => row.location === d && 
+                                                                row.date <= global_date &&
+                                                                row[global_feature].length > 0 &&
+                                                                +row[global_feature] >= 0);
+                            addLine(data_new, color);
+                        });
+                        
+                        /* end ---------- redrawLine ------------ end */
+
+                        /* ---------- Slider and Map ------------ */
+
+                        handle.attr("cx", x_slider(new Date(global_date)));
+                        showName(formatDate_slider(new Date(global_date)));
+
+                        // Updates the map with the data corresponding to the chosen date
+                        map.update(data_barChart);
+
+                        /* end ---------- Slider and Map ------------ end */
+
+                    };
+
+                    var update = function(){ // Is called iteratively
+
+                        if (global_date < formatDate(end_date)) { // Either at the start of the slider or in between the start and the end
+                            global_date = dates[++counter_dates];
+
+                            update_all_charts();
+                        }
+                        else if (global_date == formatDate(end_date)) {
+                            if (counter_dates <= 0) { // Inital case where nothing happended yet (play button was not clicked yet) and slider is on end_date by default
+                                global_date = dates[counter_dates]; // resets global_date to start_date
+
+                                update_all_charts();
+                            }
+                            else { // Case where slider is at the end_date but the play button was clicked before 
+                                resetTimer();
+                                counter_dates = 0; // Resets the counter to 0 once, one full animation was completed
+                            }  
+                        }
+                    };
+
+                    function resetTimer() {
+                        clearInterval(timer);
+                        playButton.text("Play");
+                    }
+
+                    var playButton = d3.select("#play-button");
+
+                    playButton.on("click", function () {
+                        if (playButton.text() == "Pause") {
+                            resetTimer(); // interrupt loop
+                        } 
+                        else if (playButton.text() == "Play" ) {
+                            timer = setInterval(update, 50);
+                            playButton.text("Pause");
+                        }
+                    });
+
+                </script>
             </div>    
 
             <!-- Line chart with dropdown menus for both axes. Controlled via time slider -->
@@ -503,7 +509,7 @@
                         // x-axis label
                         var x_feature_barChart = barChart.append("text")
                                 .attr("transform", "translate(" + (width_barChart/2) + " ," + 
-                                                        (height_barChart + 80) + ")")
+                                                        (height_barChart + 60) + ")")
                                 .attr("font-size", 20)
                                 .attr("font-weight", "bold")
                                 .style("text-anchor", "middle")
@@ -518,7 +524,7 @@
                             barChart.append("g")
                             .attr("class","grid")
                             .style("stroke-dasharray",("5,5"))
-                            .call(d3.axisBottom(x_barChart).ticks(10, "~s")
+                            .call(d3.axisBottom(x_barChart).ticks(5, "~s")
                                 .tickSize(height_barChart)
                                 .tickFormat(""));
                         };
@@ -532,7 +538,7 @@
                                 barChart.append("g")
                                 .attr("class", "x-axis")
                                 .attr("transform", "translate(0," + height_barChart + ")")
-                                .call(d3.axisBottom(x_barChart).tickSize(-height_barChart).tickFormat(x => d3.format(".2s")(x)))
+                                .call(d3.axisBottom(x_barChart).tickSize(-height_barChart).tickFormat(x => d3.format(".2s")(x)).ticks(5, "~s"))
                                 .call(g => g.select(".domain").remove())
                                 .selectAll("text")
                                     .attr("font-size", "13px")
@@ -610,7 +616,7 @@
 
                             barChart.selectAll(".x-axis")   
                                         //.transition().duration(250)
-                                        .call(d3.axisBottom(x_barChart).tickSize(0).tickFormat(x => d3.format(".2s")(x)))
+                                        .call(d3.axisBottom(x_barChart).tickSize(0).tickFormat(x => d3.format(".2s")(x)).ticks(5, "~s"))
                                         .call(g => g.select(".domain").remove())
                                         .selectAll("text")  
                                             .attr("font-size", "13px")
@@ -631,7 +637,7 @@
                             reset_barChart();
                             drawBarChart();
                             reset_barChart_axes();
-                            //make_x_gridlines();
+                            make_x_gridlines();
 
                             // Take the top-5 countries form the bar chart and plot them in line plot
                             countries = [];
@@ -726,7 +732,7 @@
                         
                         var y_linechart = d3.scaleLinear()
                             .range([height, 0]);
-                        var yAxis_line = d3.axisLeft(y_linechart).tickSize(-width+10);
+                        var yAxis_line = d3.axisLeft(y_linechart).tickSize(-width+10).tickFormat(x => d3.format(".2s")(x)).ticks(6, "~s");
                                         
                         // y-axis tick labels
                         lineChart.append("g")
@@ -741,7 +747,7 @@
                                     .attr("transform", "rotate(-35)");
 
                         y_feature = lineChart.append("text")
-                                    .attr("transform", "translate(" + -95 + "," + (height/2) + ")rotate(-90)")
+                                    .attr("transform", "translate(" + -60 + "," + (height/2) + ")rotate(-90)")
                                     .style("text-anchor", "middle")
                                     .attr("font-size", 20)
                                     .attr("font-weight", "bold");
@@ -1027,106 +1033,115 @@
 
             <!-- Drowdown menus for selecting the x- and y-features for the scatter plot -->
             <div class="wrapper-div">
-                <div class="pull-right" style="margin-left: 1em;">
-                    <label for="features">Choose a feature 1:</label>
-                    <select class="form-control" id="scatter-select-xfeature">
-                        <option value='total_cases_per_million'> Total Cases per million </option>
-                        <option value='total_cases'> Total Cases </option>
-                        <option value='new_cases_smoothed'> New Cases </option>
-                        <option value='new_cases_smoothed_per_million'> New Cases per million </option>
-                        <option value="total_deaths"> Total Deaths </option>
-                        <option value="total_deaths_per_million"> Total Deaths per million </option>
-                        <option value="new_deaths_smoothed"> New Deaths </option>
-                        <option value="new_deaths_smoothed_per_million"> New Deaths per Million </option>       
-                        <option value="reproduction_rate"> Reproduction Rate </option>
-                        <option value="icu_patients_per_million"> ICU Patients per million </option>
-                        <option value="hosp_patients_per_million"> Hospital patients per million </option>      
-                        <option value="total_tests"> Total Tests </option> total_vaccinations
-                        <option value="total_vaccinations"> Total Vaccinations </option>
-                        <option value="people_vaccinated"> People vaccinated </option>      
-                        <option value="people_fully_vaccinated" > People fully vaccinated  </option>
-                        <option value="percentage_of_people_vaccinated">Percentage Of People vaccinated </option>
-                        <option value="percentage_of_people_fully_vaccinated">Percentage Of People fully vaccinated</option>
-                        <option value="new_vaccinations_smoothed_per_million"> New vaccinations per million </option>
 
-                        <option value="stringency_index"> Stringency Index </option>
-                        <option value="life_expectancy"> Life Expectancy </option> 
-                        <option value="gdp_per_capita"> Gdp per Capita </option>
-                        <option value="handwashing_facilities"> Handwashing Facilities </option>
-                        <option value="human_development_index"> Human Development Index </option>
-                        <option value="hospital_beds_per_thousand"> Hospital beds per Thousand </option>
-                        <option value="male_smokers"> Male smokers (Share of male population) </option>
-                        <option value="female_smokers"> Female Smokers (Share of female population) </option>
-                        <option value="diabetes_prevalence"> Diabetes Prevalence </option>
-                        <option value="cardiovasc_death_rate"> Cardiovasc Death Rate </option>
-                        <option value="extreme_poverty"> Extreme Poverty </option>
-                        <option value="aged_70_older"> Aged 70 older </option>
-                        <option value="median_age"> Median Age </option>
-                        <option value="population"> Population </option>
-                    </select>
-                    
-                    <label for="features">Choose a feature 2:</label>
-                    <select class="form-control" id="scatter-select-yfeature">
-                        <option value="total_deaths_per_million"> Total Deaths per million </option>
-                        <option value='total_cases'> Total Cases </option>
-                        <option value='total_cases_per_million'> Total Cases per million </option>
-                        <option value='new_cases_smoothed'> New Cases </option>
-                        <option value='new_cases_smoothed_per_million'> New Cases per million </option>
-                        <option value="total_deaths"> Total Deaths </option>
-                        <option value="new_deaths_smoothed"> New Deaths </option>
-                        <option value="new_deaths_smoothed_per_million"> New Deaths per Million </option>         
-                        <option value="reproduction_rate"> Reproduction Rate </option>
-                        <option value="icu_patients_per_million"> ICU Patients per million </option>
-                        <option value="hosp_patients_per_million"> Hospital patients per million </option>      
-                        <option value="total_tests"> Total Tests </option> total_vaccinations
-                        <option value="total_vaccinations"> Total Vaccinations </option>
-                        <option value="people_vaccinated"> People vaccinated </option>      
-                        <option value="people_fully_vaccinated" > People fully vaccinated  </option>
-                        <option value="percentage_of_people_vaccinated">Percentage Of People vaccinated </option>
-                        <option value="percentage_of_people_fully_vaccinated">Percentage Of People fully vaccinated</option>
-                        <option value="new_vaccinations_smoothed_per_million"> New vaccinations per million </option>
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <label for="features">Choose x-axis feature:</label>
+                            <select class="form-control" id="scatter-select-xfeature">
+                                <option value='total_cases_per_million'> Total Cases per million </option>
+                                <option value='total_cases'> Total Cases </option>
+                                <option value='new_cases_smoothed'> New Cases </option>
+                                <option value='new_cases_smoothed_per_million'> New Cases per million </option>
+                                <option value="total_deaths"> Total Deaths </option>
+                                <option value="total_deaths_per_million"> Total Deaths per million </option>
+                                <option value="new_deaths_smoothed"> New Deaths </option>
+                                <option value="new_deaths_smoothed_per_million"> New Deaths per Million </option>       
+                                <option value="reproduction_rate"> Reproduction Rate </option>
+                                <option value="icu_patients_per_million"> ICU Patients per million </option>
+                                <option value="hosp_patients_per_million"> Hospital patients per million </option>      
+                                <option value="total_tests"> Total Tests </option> total_vaccinations
+                                <option value="total_vaccinations"> Total Vaccinations </option>
+                                <option value="people_vaccinated"> People vaccinated </option>      
+                                <option value="people_fully_vaccinated" > People fully vaccinated  </option>
+                                <option value="percentage_of_people_vaccinated">Percentage Of People vaccinated </option>
+                                <option value="percentage_of_people_fully_vaccinated">Percentage Of People fully vaccinated</option>
+                                <option value="new_vaccinations_smoothed_per_million"> New vaccinations per million </option>
+        
+                                <option value="stringency_index"> Stringency Index </option>
+                                <option value="life_expectancy"> Life Expectancy </option> 
+                                <option value="gdp_per_capita"> Gdp per Capita </option>
+                                <option value="handwashing_facilities"> Handwashing Facilities </option>
+                                <option value="human_development_index"> Human Development Index </option>
+                                <option value="hospital_beds_per_thousand"> Hospital beds per Thousand </option>
+                                <option value="male_smokers"> Male smokers (Share of male population) </option>
+                                <option value="female_smokers"> Female Smokers (Share of female population) </option>
+                                <option value="diabetes_prevalence"> Diabetes Prevalence </option>
+                                <option value="cardiovasc_death_rate"> Cardiovasc Death Rate </option>
+                                <option value="extreme_poverty"> Extreme Poverty </option>
+                                <option value="aged_70_older"> Aged 70 older </option>
+                                <option value="median_age"> Median Age </option>
+                                <option value="population"> Population </option>
+                            </select>
+                        </div>
 
-                        <option value="stringency_index"> Stringency Index </option>
-                        <option value="life_expectancy"> Life Expectancy </option> 
-                        <option value="gdp_per_capita"> Gdp per Capita </option>
-                        <option value="handwashing_facilities"> Handwashing Facilities </option>
-                        <option value="human_development_index"> Human Development Index </option>
-                        <option value="hospital_beds_per_thousand"> Hospital beds per Thousand </option>
-                        <option value="male_smokers"> Male smokers (Share of male population) </option>
-                        <option value="female_smokers"> Female Smokers (Share of female population) </option>
-                        <option value="diabetes_prevalence"> Diabetes Prevalence </option>
-                        <option value="cardiovasc_death_rate"> Cardiovasc Death Rate </option>
-                        <option value="extreme_poverty"> Extreme Poverty </option>
-                        <option value="aged_70_older"> Aged 70 older </option>
-                        <option value="median_age"> Median Age </option>
-                        <option value="population"> Population </option>
-                    </select>
+                        <div class="col">
+                            <div class="row">
+                                <label for="features">Choose y-axis feature:</label>
+                                <select class="form-control" id="scatter-select-yfeature">
+                                    <option value="total_deaths_per_million"> Total Deaths per million </option>
+                                    <option value='total_cases'> Total Cases </option>
+                                    <option value='total_cases_per_million'> Total Cases per million </option>
+                                    <option value='new_cases_smoothed'> New Cases </option>
+                                    <option value='new_cases_smoothed_per_million'> New Cases per million </option>
+                                    <option value="total_deaths"> Total Deaths </option>
+                                    <option value="new_deaths_smoothed"> New Deaths </option>
+                                    <option value="new_deaths_smoothed_per_million"> New Deaths per Million </option>         
+                                    <option value="reproduction_rate"> Reproduction Rate </option>
+                                    <option value="icu_patients_per_million"> ICU Patients per million </option>
+                                    <option value="hosp_patients_per_million"> Hospital patients per million </option>      
+                                    <option value="total_tests"> Total Tests </option> total_vaccinations
+                                    <option value="total_vaccinations"> Total Vaccinations </option>
+                                    <option value="people_vaccinated"> People vaccinated </option>      
+                                    <option value="people_fully_vaccinated" > People fully vaccinated  </option>
+                                    <option value="percentage_of_people_vaccinated">Percentage Of People vaccinated </option>
+                                    <option value="percentage_of_people_fully_vaccinated">Percentage Of People fully vaccinated</option>
+                                    <option value="new_vaccinations_smoothed_per_million"> New vaccinations per million </option>
 
-                    <script>
-                    // Upon change of second feature, scatter plot is redrawn
-                    d3.select('#scatter-select-xfeature').on('change', function() {
-                        scatter_xfeature = this.value;
-                        drawScatterPlot();
-                    });
-                    d3.select('#scatter-select-yfeature').on('change', function() {
-                        scatter_yfeature = this.value;
-                        drawScatterPlot();
-                    });
-                    </script>
+                                    <option value="stringency_index"> Stringency Index </option>
+                                    <option value="life_expectancy"> Life Expectancy </option> 
+                                    <option value="gdp_per_capita"> Gdp per Capita </option>
+                                    <option value="handwashing_facilities"> Handwashing Facilities </option>
+                                    <option value="human_development_index"> Human Development Index </option>
+                                    <option value="hospital_beds_per_thousand"> Hospital beds per Thousand </option>
+                                    <option value="male_smokers"> Male smokers (Share of male population) </option>
+                                    <option value="female_smokers"> Female Smokers (Share of female population) </option>
+                                    <option value="diabetes_prevalence"> Diabetes Prevalence </option>
+                                    <option value="cardiovasc_death_rate"> Cardiovasc Death Rate </option>
+                                    <option value="extreme_poverty"> Extreme Poverty </option>
+                                    <option value="aged_70_older"> Aged 70 older </option>
+                                    <option value="median_age"> Median Age </option>
+                                    <option value="population"> Population </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
+                <script>
+                // Upon change of second feature, scatter plot is redrawn
+                d3.select('#scatter-select-xfeature').on('change', function() {
+                    scatter_xfeature = this.value;
+                    drawScatterPlot();
+                });
+                d3.select('#scatter-select-yfeature').on('change', function() {
+                    scatter_yfeature = this.value;
+                    drawScatterPlot();
+                });
+                </script>
 
                 <!-- Scatter plot to show correlation between two features -->
                 <div id="scatter" style="margin-left: 1em;"></div>
 
                     <script>
-                        var margin_scatter = {top: 30, right: 50, bottom: 100, left: 130},
-                            width_scatter = 1000 - margin_scatter.left - margin_scatter.right,
+                        var margin_scatter = {top: 50, right: 70, bottom: 100, left: 130},
+                            width_scatter = 1100 - margin_scatter.left - margin_scatter.right,
                             height_scatter = 800 - margin_scatter.top - margin_scatter.bottom;
                         
                         var scatter = d3.select("#scatter")
                                 .append("svg")
                                 .attr("class", "scatter-plot")
-                                    .attr("width", width_scatter + margin_scatter.left + margin_scatter.right + 140)
+                                    .attr("width", width_scatter + margin_scatter.left + margin_scatter.right + 180)
                                     .attr("height", height_scatter + margin_scatter.top + margin_scatter.bottom)
                                 .append("g")
                                     .attr("transform",
@@ -1134,7 +1149,7 @@
 
                         var x_scatter = d3.scaleLog()
                             .range([0, width_scatter]);
-                        var xAxis_scatter = d3.axisBottom(x_scatter).tickSize(-height_scatter);
+                        var xAxis_scatter = d3.axisBottom(x_scatter).tickSize(-height_scatter).tickFormat(x => d3.format(".2s")(x)).ticks(3, "~s");
                                                                         
                         scatter.append("g")
                             .attr("class", "x-axis-scatter")
@@ -1157,7 +1172,7 @@
                         
                         var y_scatter = d3.scaleLog()
                             .range([height_scatter, 0]);
-                        var yAxis_scatter = d3.axisLeft(y_scatter).tickSize(-width_scatter-margin_scatter.top+10);
+                        var yAxis_scatter = d3.axisLeft(y_scatter).tickSize(-width_scatter-margin_scatter.top+10).tickFormat(x => d3.format(".2s")(x)).ticks(3, "~s");
 
                         scatter.append("g")
                             .attr("class", "y-axis-scatter")
@@ -1181,7 +1196,7 @@
                                 .attr("class", "legend-scatter")
                                 .attr("width", 200)
                                 .attr("height", 382)
-                                .attr("transform", "translate(" + (width_scatter + 50) + "," + (40) + ")");
+                                .attr("transform", "translate(" + (width_scatter + 110) + "," + (40) + ")");
 
                         legend_scatter.append("rect")
                             // .attr("class", "legend-scatter")
@@ -1302,7 +1317,6 @@
                             // Redraw the x-axis
                             x_scatter.domain(d3.extent(features));
                             scatter.selectAll(".x-axis-scatter")    
-                            //.transition().duration(250)
                                 .call(xAxis_scatter)
                                 .call(g => g.select(".domain").remove())
                                     .selectAll("text")
@@ -1315,7 +1329,6 @@
                             // Redraw the y-axis
                             y_scatter.domain(d3.extent(features2));
                             scatter.selectAll(".y-axis-scatter")    
-                            //.transition().duration(250)
                                 .call(yAxis_scatter)
                                 .call(g => g.select(".domain").remove())
                                     .selectAll("text")

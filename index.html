@@ -1,12 +1,6 @@
 <!--
                 TODOS:
-                .) Fixing sclaing issue with the zoom
-                .) Issue with data loading (Oct 16th)
-                .) Can I make it more efficient? (data loading e.g.)
-
                 .) Tooltips under/beneath the charts to explain how to use them 
-                .) Logarithmic scale for scatter plot?
-                .) CSS Bootstrap?
 -->
 
 <html>
@@ -192,8 +186,7 @@
                     </div>
                 </div>
 
-                <!-- Time slider for map, line chart, bar chart and scatter plot 
-                <svg width="1300" height="80" id="time_slider"></svg>  -->
+                <!-- Time slider for map, line chart, bar chart and scatter plot -->
                 <script>
 
                     var svg = d3.select("#time_slider"),
@@ -282,192 +275,192 @@
                     },3000);  // timeout for loading of data_full
                 </script>
                 
-                <!-- Shows animation of evolution of data in bar, line and map chart. -->
-                    <script>
-                        var counter_dates = 0; // counts which date to choose
+                <!-- Play button functionality: Shows animation of evolution of data in bar, line and map chart. -->
+                <script>
+                    var counter_dates = 0; // counts which date to choose
 
-                        var update_all_charts = () => {
-                            // Updates map, line chart and bar chart at once
-                            // Should prevent redundant data-loading.
+                    var update_all_charts = () => {
+                        // Updates map, line chart and bar chart at once
+                        // Should prevent redundant data-loading.
 
-                            reset_barChart();
+                        reset_barChart();
 
-                            /* ---------- drawbarchart ------------ */
+                        /* ---------- drawbarchart ------------ */
 
-                            // Filter data for the given date
-                            data_barChart = data_full.filter(row => row.date === global_date && 
-                                                                    row[global_feature].length > 0 && // don't include if there is not data
-                                                                    +row[global_feature] >= 0); // don't include if feature is below 0 (data cleaning)
+                        // Filter data for the given date
+                        data_barChart = data_full.filter(row => row.date === global_date && 
+                                                                row[global_feature].length > 0 && // don't include if there is not data
+                                                                +row[global_feature] >= 0); // don't include if feature is below 0 (data cleaning)
 
-                            // Sort the data in descending order of the chosen feature and select top-13 countries
-                            data_barChart_top20 = data_barChart.sort((a, b) => d3.descending(+a[global_feature], +b[global_feature])).slice(0,20);
-                                        
-                            // maps the data to the axes 
-                            x_barChart.domain([0, 1.01*d3.max(data_barChart_top20, function(d) { return +d[global_feature]; })]);
-                            y_barChart.domain(data_barChart_top20.map(function(d) { return d.location; }));         
+                        // Sort the data in descending order of the chosen feature and select top-13 countries
+                        data_barChart_top20 = data_barChart.sort((a, b) => d3.descending(+a[global_feature], +b[global_feature])).slice(0,20);
+                                    
+                        // maps the data to the axes 
+                        x_barChart.domain([0, 1.01*d3.max(data_barChart_top20, function(d) { return +d[global_feature]; })]);
+                        y_barChart.domain(data_barChart_top20.map(function(d) { return d.location; }));         
 
-                            var color_scale_barChart = d3.scaleLinear()
-                                                                .domain(d3.extent(data_barChart_top20, function(d) { return +d[global_feature]; }))
-                                                                .range([0, 1]);
+                        var color_scale_barChart = d3.scaleLinear()
+                                                            .domain(d3.extent(data_barChart_top20, function(d) { return +d[global_feature]; }))
+                                                            .range([0, 1]);
 
-                            barChart.selectAll(".bar")
-                            .data(data_barChart_top20)
-                            .enter()
-                                .append("rect")
-                                .attr("class", "bar")
-                                .attr("x", x_barChart(0))
-                                .attr("y", function(d) { return y_barChart(d.location); })
-                                .attr("width", function(d) {  return x_barChart(+d[global_feature]); })
-                                .attr("height", y_barChart.bandwidth())
-                                .attr("fill", function(d) {return d3.interpolateOrRd(color_scale_barChart(+d[global_feature])); });
+                        barChart.selectAll(".bar")
+                        .data(data_barChart_top20)
+                        .enter()
+                            .append("rect")
+                            .attr("class", "bar")
+                            .attr("x", x_barChart(0))
+                            .attr("y", function(d) { return y_barChart(d.location); })
+                            .attr("width", function(d) {  return x_barChart(+d[global_feature]); })
+                            .attr("height", y_barChart.bandwidth())
+                            .attr("fill", function(d) {return d3.interpolateOrRd(color_scale_barChart(+d[global_feature])); });
 
-                            barChart.selectAll(".bar-values")
-                                        .data(data_barChart_top20)
-                                        .enter()
-                                            .append("text")
-                                                .attr("class", "bar-values")   
-                                                .attr("font-size", 13)
-                                                .attr("font-weight", "Normal")
-                                                .attr("x", function(d) { return x_barChart(+d[global_feature]) + 10; })
-                                                .attr("y", function(d) { return y_barChart(d.location) + 14; })
-                                                .text(function(d) { return d3.format(".4s")(+d[global_feature]); });
+                        barChart.selectAll(".bar-values")
+                                    .data(data_barChart_top20)
+                                    .enter()
+                                        .append("text")
+                                            .attr("class", "bar-values")   
+                                            .attr("font-size", 13)
+                                            .attr("font-weight", "Normal")
+                                            .attr("x", function(d) { return x_barChart(+d[global_feature]) + 10; })
+                                            .attr("y", function(d) { return y_barChart(d.location) + 14; })
+                                            .text(function(d) { return d3.format(".4s")(+d[global_feature]); });
 
-                            /* end ---------- drawbarchart ------------ end */
-                            
-                            reset_barChart_axes();
-                            make_x_gridlines();
+                        /* end ---------- drawbarchart ------------ end */
+                        
+                        reset_barChart_axes();
+                        make_x_gridlines();
 
-                            // Take the top-5 countries form the bar chart and plot them in line plot
-                            countries = [];
-                            data_barChart_top20.slice(0,5).forEach(function(d) {
-                                countries.push(d.location);
-                            });
+                        // Take the top-5 countries form the bar chart and plot them in line plot
+                        countries = [];
+                        data_barChart_top20.slice(0,5).forEach(function(d) {
+                            countries.push(d.location);
+                        });
 
-                            /* ---------- redrawLine ------------ */
+                        /* ---------- redrawLine ------------ */
 
-                            reset_soft_line(); // removes all lines from line chart
+                        reset_soft_line(); // removes all lines from line chart
 
-                            // Reset global values for the new feature
-                            new_feature_max = 0;
-                            max_location = 0;
-                            countries_max_values = [];
-                            global_max = 0;
-                            values = [];
+                        // Reset global values for the new feature
+                        new_feature_max = 0;
+                        max_location = 0;
+                        countries_max_values = [];
+                        global_max = 0;
+                        values = [];
 
-                            countries.forEach(d => { // Maximum values of the new feature for each country are re-computed
-                                                    // necessary because the y-scale has to be re-computed
+                        countries.forEach(d => { // Maximum values of the new feature for each country are re-computed
+                                                // necessary because the y-scale has to be re-computed
 
-                                var data_new = data_full.filter(row => row.location === d && 
-                                                                    row.date <= global_date && 
-                                                                    row[global_feature].length > 0 &&
-                                                                    +row[global_feature] >= 0);
-                                                                    
-                                var features = data_new.map(row => +row[global_feature]);
-                                var current_max = d3.max(features);
-                                countries_max_values.push(current_max);
+                            var data_new = data_full.filter(row => row.location === d && 
+                                                                row.date <= global_date && 
+                                                                row[global_feature].length > 0 &&
+                                                                +row[global_feature] >= 0);
+                                                                
+                            var features = data_new.map(row => +row[global_feature]);
+                            var current_max = d3.max(features);
+                            countries_max_values.push(current_max);
 
-                                // Needed to show the countries in the legend in descending order of the max value
-                                values.push([d, current_max]);
-                                values.sort((a, b) => d3.descending(+a[1], +b[1]));
+                            // Needed to show the countries in the legend in descending order of the max value
+                            values.push([d, current_max]);
+                            values.sort((a, b) => d3.descending(+a[1], +b[1]));
 
-                                if (current_max > new_feature_max) {
-                                    max_location = d;
-                                    new_feature_max = current_max;
-                                }
-                            });
-
-                            // Is needed by DrawLineChart to plot the new country correctly
-                            global_max = new_feature_max;
-
-                            var color_scale = d3.scaleLinear()
-                                                    .domain(d3.extent(countries_max_values))
-                                                    .range([0, 1]);
-                            drawLegend();
-
-                            // Update the xaxis domain with end_date taken from the csv-file
-                            x_linechart.domain([start_date, new Date(global_date)]);
-                            lineChart.selectAll(".x-axis")
-                                .call(xAxis_line)
-                                .call(g => g.select(".domain").remove())
-                                .selectAll("text")  
-                                    .attr("font-size", "15px")
-                                    .style("text-anchor", "end")
-                                    .attr("dx", "-.1em")
-                                    .attr("dy", ".55em")
-                                    .attr("transform", "rotate(-35)");
-
-                            y_linechart.domain([0, new_feature_max]);
-                            lineChart.selectAll(".y-axis")   
-                                .call(yAxis_line)
-                                .call(g => g.select(".domain").remove())
-                                .selectAll("text")  
-                                                .attr("font-size", "15px")
-                                                .style("text-anchor", "end")
-                                                .attr("dx", "-.5em")
-                                                .attr("dy", "-0.5em")
-                                                .attr("transform", "rotate(-35)");
-
-                            countries.forEach((d, i) => {
-                                color = d3.interpolateOrRd(color_scale(countries_max_values[i]));                               
-                                data_new = data_full.filter(row => row.location === d && 
-                                                                    row.date <= global_date &&
-                                                                    row[global_feature].length > 0 &&
-                                                                    +row[global_feature] >= 0);
-                                addLine(data_new, color);
-                            });
-                            
-                            /* end ---------- redrawLine ------------ end */
-
-                            /* ---------- Slider and Map ------------ */
-
-                            handle.attr("cx", x_slider(new Date(global_date)));
-                            showName(formatDate_slider(new Date(global_date)));
-
-                            // Updates the map with the data corresponding to the chosen date
-                            map.update(data_barChart);
-
-                            /* end ---------- Slider and Map ------------ end */
-
-                        };
-
-                        var update = function(){ // Is called iteratively
-
-                            if (global_date < formatDate(end_date)) { // Either at the start of the slider or in between the start and the end
-                                global_date = dates[++counter_dates];
-
-                                update_all_charts();
-                            }
-                            else if (global_date == formatDate(end_date)) {
-                                if (counter_dates <= 0) { // Inital case where nothing happended yet (play button was not clicked yet) and slider is on end_date by default
-                                    global_date = dates[counter_dates]; // resets global_date to start_date
-
-                                    update_all_charts();
-                                }
-                                else { // Case where slider is at the end_date but the play button was clicked before 
-                                    resetTimer();
-                                    counter_dates = 0; // Resets the counter to 0 once, one full animation was completed
-                                }  
-                            }
-                        };
-
-                        function resetTimer() {
-                            clearInterval(timer);
-                            playButton.text("Play");
-                        }
-
-                        var playButton = d3.select("#play-button");
-
-                        playButton.on("click", function () {
-                            if (playButton.text() == "Pause") {
-                                resetTimer(); // interrupt loop
-                            } 
-                            else if (playButton.text() == "Play" ) {
-                                timer = setInterval(update, 50);
-                                playButton.text("Pause");
+                            if (current_max > new_feature_max) {
+                                max_location = d;
+                                new_feature_max = current_max;
                             }
                         });
 
-                    </script>
+                        // Is needed by DrawLineChart to plot the new country correctly
+                        global_max = new_feature_max;
+
+                        var color_scale = d3.scaleLinear()
+                                                .domain(d3.extent(countries_max_values))
+                                                .range([0, 1]);
+                        drawLegend();
+
+                        // Update the xaxis domain with end_date taken from the csv-file
+                        x_linechart.domain([start_date, new Date(global_date)]);
+                        lineChart.selectAll(".x-axis")
+                            .call(xAxis_line)
+                            .call(g => g.select(".domain").remove())
+                            .selectAll("text")  
+                                .attr("font-size", "15px")
+                                .style("text-anchor", "end")
+                                .attr("dx", "-.1em")
+                                .attr("dy", ".55em")
+                                .attr("transform", "rotate(-35)");
+
+                        y_linechart.domain([0, new_feature_max]);
+                        lineChart.selectAll(".y-axis")   
+                            .call(yAxis_line)
+                            .call(g => g.select(".domain").remove())
+                            .selectAll("text")  
+                                            .attr("font-size", "15px")
+                                            .style("text-anchor", "end")
+                                            .attr("dx", "-.5em")
+                                            .attr("dy", "-0.5em")
+                                            .attr("transform", "rotate(-35)");
+
+                        countries.forEach((d, i) => {
+                            color = d3.interpolateOrRd(color_scale(countries_max_values[i]));                               
+                            data_new = data_full.filter(row => row.location === d && 
+                                                                row.date <= global_date &&
+                                                                row[global_feature].length > 0 &&
+                                                                +row[global_feature] >= 0);
+                            addLine(data_new, color);
+                        });
+                        
+                        /* end ---------- redrawLine ------------ end */
+
+                        /* ---------- Slider and Map ------------ */
+
+                        handle.attr("cx", x_slider(new Date(global_date)));
+                        showName(formatDate_slider(new Date(global_date)));
+
+                        // Updates the map with the data corresponding to the chosen date
+                        map.update(data_barChart);
+
+                        /* end ---------- Slider and Map ------------ end */
+
+                    };
+
+                    var update = function(){ // Is called iteratively
+
+                        if (global_date < formatDate(end_date)) { // Either at the start of the slider or in between the start and the end
+                            global_date = dates[++counter_dates];
+
+                            update_all_charts();
+                        }
+                        else if (global_date == formatDate(end_date)) {
+                            if (counter_dates <= 0) { // Inital case where nothing happended yet (play button was not clicked yet) and slider is on end_date by default
+                                global_date = dates[counter_dates]; // resets global_date to start_date
+
+                                update_all_charts();
+                            }
+                            else { // Case where slider is at the end_date but the play button was clicked before 
+                                resetTimer();
+                                counter_dates = 0; // Resets the counter to 0 once, one full animation was completed
+                            }  
+                        }
+                    };
+
+                    function resetTimer() {
+                        clearInterval(timer);
+                        playButton.text("Play");
+                    }
+
+                    var playButton = d3.select("#play-button");
+
+                    playButton.on("click", function () {
+                        if (playButton.text() == "Pause") {
+                            resetTimer(); // interrupt loop
+                        } 
+                        else if (playButton.text() == "Play" ) {
+                            timer = setInterval(update, 50);
+                            playButton.text("Pause");
+                        }
+                    });
+
+                </script>
             </div>    
 
             <!-- Line chart with dropdown menus for both axes. Controlled via time slider -->
@@ -1324,7 +1317,6 @@
                             // Redraw the x-axis
                             x_scatter.domain(d3.extent(features));
                             scatter.selectAll(".x-axis-scatter")    
-                            //.transition().duration(250)
                                 .call(xAxis_scatter)
                                 .call(g => g.select(".domain").remove())
                                     .selectAll("text")
@@ -1337,7 +1329,6 @@
                             // Redraw the y-axis
                             y_scatter.domain(d3.extent(features2));
                             scatter.selectAll(".y-axis-scatter")    
-                            //.transition().duration(250)
                                 .call(yAxis_scatter)
                                 .call(g => g.select(".domain").remove())
                                     .selectAll("text")
