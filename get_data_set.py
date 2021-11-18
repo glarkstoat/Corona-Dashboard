@@ -13,7 +13,7 @@ csv_file = open('data_covid.csv', 'wb')
 csv_file.write(url_content)
 csv_file.close()
 
-# Rename first column from 'iso_code' to 'iso3' (don't know why)
+# Rename first column from 'iso_code' to 'iso3' (is necessary)
 df = pd.read_csv('data_covid.csv')
 df = df.rename(columns={"iso_code": "iso3"})
 
