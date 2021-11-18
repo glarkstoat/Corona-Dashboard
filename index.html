@@ -45,7 +45,7 @@
     
         <div class="wrapper">
             <div class="wrapper-div"> <!-- Time slider to control map and scatter plot -->
-                <div class="pull-right" style="margin-left: 10em;">
+                <div class="pull-right" style="margin-top: 40px; margin-left: 10em;">
                     <label for="features">Choose a map-feature:</label>
                     <select class="form-control" id="map-line-select">                      
                         <option value='total_cases'> Total Cases </option>
@@ -148,7 +148,7 @@
                                 .column('total_cases')
                                 .duration(100)
                                 .scale(280)
-                                .height(900)
+                                .height(850)
                                 .width(1450)
                                 .format(d3.format(".5s"))
                                 .legend(true)
@@ -178,9 +178,111 @@
                         });
                     </script>
                 </div>
+
+                <div class="container">
+                    <div class="row">
+                        <div class="col-2">
+                            <button id="play-button">Play</button>
+                        </div>
+                        <div class="col">
+                            <div class="row">
+                                <svg width="950" height="80" id="time_slider"></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Time slider for map, line chart, bar chart and scatter plot 
+                <svg width="1300" height="80" id="time_slider"></svg>  -->
+                <script>
+
+                    var svg = d3.select("#time_slider"),
+                        margin_slider = {right: 0, left: 0},
+                        width_slider = 900 - margin_slider.left - margin_slider.right,
+                        height_slider = +svg.attr("height");
+
+                    var slider = svg.append("g")
+                        .attr("class", "slider")
+                        .attr("transform", "translate(" + (10) + "," + (height_slider / 2) + ")");
+    
+                    // Contains the selected date
+                    var nameContainer = slider.append("text")
+                        .attr("transform", "translate(" + (width_slider/2 - 130)  + "," + -20 +")")
+                        .attr("font-size", "22px");
+    
+                    // Shows selected date above the slider
+                    const showName = text => nameContainer.text("Selected Date: " + text);
+
+                    var x_slider = d3.scaleTime()
+                            .range([0, width_slider])
+                            .clamp(true);
+
+                    slider.append("line")
+                            .attr("class", "track")
+                            .attr("x1", x_slider.range()[0])
+                            .attr("x2", x_slider.range()[1])
+                            .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+                            .attr("class", "track-inset")
+                            .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+                            .attr("class", "track-overlay")
+                            .call(d3.drag()
+                                .on("drag", function() {    updateMap(d3.mouse(this)[0]);
+                                                            redrawBarChart(); })
+                                .on("end", function() {     updateMap(d3.mouse(this)[0]);
+                                                            redrawBarChart(); })); 
+
+                    var handle = slider.insert("circle", ".track-overlay")
+                            .attr("class", "handle")
+                            .attr("r", 12);
+
+                    // Sets the initial position of the handle to the most recent date
+                    handle.attr("cx", width_slider);
+
+                    // Regulats what happens if slider is moved
+                    const updateMap = mouse => {
+                        // if ... else so that slider handle doesn't go beyond the edges of the track overlay
+                        if (mouse > width_slider) { handle.attr("cx", width_slider); }
+                        else if (mouse < 0) { handle.attr("cx", 0); }
+                        else { handle.attr("cx", mouse); 
+
+                        // Gets the selected date based on the slider position
+                        selected_date = x_slider.invert(mouse);
+                        global_date = formatDate(selected_date);
+
+                        // Set the counter_dates to the index of the global_date in dates
+                        counter_dates = dates.indexOf(global_date);
+
+                        // Updates the map with the data corresponding to the chosen date
+                        new_data = data_full.filter(row => row.date === global_date && 
+                                                           row[global_feature].length > 0 && // don't include if there is not data
+                                                           +row[global_feature] >= 0); // don't include if feature is below 0 (data cleaning)
+                        map.update(new_data);
+
+                        // Shows the selected date in the name container above the slider track
+                        showName(formatDate_slider(selected_date));
+                        }
+                    };
+
+                    setTimeout(function() { // needed so that data_full can be accessed
+
+                        x_slider.domain([start_date, end_date]);
+                        showName(formatDate_slider(end_date)); // Shows the initial date
+                                
+                        // Time ticks of slider
+                        slider.insert("g", ".track-overlay")
+                            .attr("class", "ticks")
+                            .attr("transform", "translate(0," + 25 + ")")
+                            .selectAll("text")
+                            .data(x_slider.ticks(7))
+                            .enter().append("text")
+                                .attr("x", x_slider)
+                                .attr("text-anchor", "middle")
+                                .text(function(d) { return formatDate_slider(d); });
+                        
+                    },3000);  // timeout for loading of data_full
+                </script>
                 
                 <!-- Shows animation of evolution of data in bar, line and map chart. -->
-                <button id="play-button">Play</button>
                     <script>
                         var counter_dates = 0; // counts which date to choose
 
@@ -366,96 +468,6 @@
                         });
 
                     </script>
-
-                <!-- Time slider for map, line chart, bar chart and scatter plot -->
-                <svg width="1300" height="100" id="time_slider"></svg> 
-                <script>
-
-                    var svg = d3.select("#time_slider"),
-                        margin_slider = {right: 20, left: 0},
-                        width_slider = 900 - margin_slider.left - margin_slider.right,
-                        height_slider = +svg.attr("height");
-
-                    var slider = svg.append("g")
-                        .attr("class", "slider")
-                        .attr("transform", "translate(" + (290) + "," + (height_slider / 2) + ")");
-    
-                    // Contains the selected date
-                    var nameContainer = slider.append("text")
-                        .attr("transform", "translate(" + (width_slider/2 - 130)  + "," + -20 +")")
-                        .attr("font-size", "22px");
-    
-                    // Shows selected date above the slider
-                    const showName = text => nameContainer.text("Selected Date: " + text);
-
-                    var x_slider = d3.scaleTime()
-                            .range([0, width_slider])
-                            .clamp(true);
-
-                    slider.append("line")
-                            .attr("class", "track")
-                            .attr("x1", x_slider.range()[0])
-                            .attr("x2", x_slider.range()[1])
-                            .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
-                            .attr("class", "track-inset")
-                            .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
-                            .attr("class", "track-overlay")
-                            .call(d3.drag()
-                                .on("drag", function() {    updateMap(d3.mouse(this)[0]);
-                                                            redrawBarChart(); })
-                                .on("end", function() {     updateMap(d3.mouse(this)[0]);
-                                                            redrawBarChart(); })); 
-
-                    var handle = slider.insert("circle", ".track-overlay")
-                            .attr("class", "handle")
-                            .attr("r", 12);
-
-                    // Sets the initial position of the handle to the most recent date
-                    handle.attr("cx", width_slider);
-
-                    // Regulats what happens if slider is moved
-                    const updateMap = mouse => {
-                        // if ... else so that slider handle doesn't go beyond the edges of the track overlay
-                        if (mouse > width_slider) { handle.attr("cx", width_slider); }
-                        else if (mouse < 0) { handle.attr("cx", 0); }
-                        else { handle.attr("cx", mouse); 
-
-                        // Gets the selected date based on the slider position
-                        selected_date = x_slider.invert(mouse);
-                        global_date = formatDate(selected_date);
-
-                        // Set the counter_dates to the index of the global_date in dates
-                        counter_dates = dates.indexOf(global_date);
-
-                        // Updates the map with the data corresponding to the chosen date
-                        new_data = data_full.filter(row => row.date === global_date && 
-                                                           row[global_feature].length > 0 && // don't include if there is not data
-                                                           +row[global_feature] >= 0); // don't include if feature is below 0 (data cleaning)
-                        map.update(new_data);
-
-                        // Shows the selected date in the name container above the slider track
-                        showName(formatDate_slider(selected_date));
-                        }
-                    };
-
-                    setTimeout(function() { // needed so that data_full can be accessed
-
-                        x_slider.domain([start_date, end_date]);
-                        showName(formatDate_slider(end_date)); // Shows the initial date
-                                
-                        // Time ticks of slider
-                        slider.insert("g", ".track-overlay")
-                            .attr("class", "ticks")
-                            .attr("transform", "translate(0," + 25 + ")")
-                            .selectAll("text")
-                            .data(x_slider.ticks(7))
-                            .enter().append("text")
-                                .attr("x", x_slider)
-                                .attr("text-anchor", "middle")
-                                .text(function(d) { return formatDate_slider(d); });
-                        
-                    },3000);  // timeout for loading of data_full
-                </script>
             </div>    
 
             <!-- Line chart with dropdown menus for both axes. Controlled via time slider -->
@@ -504,7 +516,7 @@
                         // x-axis label
                         var x_feature_barChart = barChart.append("text")
                                 .attr("transform", "translate(" + (width_barChart/2) + " ," + 
-                                                        (height_barChart + 80) + ")")
+                                                        (height_barChart + 60) + ")")
                                 .attr("font-size", 20)
                                 .attr("font-weight", "bold")
                                 .style("text-anchor", "middle")
@@ -742,7 +754,7 @@
                                     .attr("transform", "rotate(-35)");
 
                         y_feature = lineChart.append("text")
-                                    .attr("transform", "translate(" + -95 + "," + (height/2) + ")rotate(-90)")
+                                    .attr("transform", "translate(" + -60 + "," + (height/2) + ")rotate(-90)")
                                     .style("text-anchor", "middle")
                                     .attr("font-size", 20)
                                     .attr("font-weight", "bold");
@@ -1028,106 +1040,115 @@
 
             <!-- Drowdown menus for selecting the x- and y-features for the scatter plot -->
             <div class="wrapper-div">
-                <div class="pull-right" style="margin-left: 1em;">
-                    <label for="features">Choose a feature 1:</label>
-                    <select class="form-control" id="scatter-select-xfeature">
-                        <option value='total_cases_per_million'> Total Cases per million </option>
-                        <option value='total_cases'> Total Cases </option>
-                        <option value='new_cases_smoothed'> New Cases </option>
-                        <option value='new_cases_smoothed_per_million'> New Cases per million </option>
-                        <option value="total_deaths"> Total Deaths </option>
-                        <option value="total_deaths_per_million"> Total Deaths per million </option>
-                        <option value="new_deaths_smoothed"> New Deaths </option>
-                        <option value="new_deaths_smoothed_per_million"> New Deaths per Million </option>       
-                        <option value="reproduction_rate"> Reproduction Rate </option>
-                        <option value="icu_patients_per_million"> ICU Patients per million </option>
-                        <option value="hosp_patients_per_million"> Hospital patients per million </option>      
-                        <option value="total_tests"> Total Tests </option> total_vaccinations
-                        <option value="total_vaccinations"> Total Vaccinations </option>
-                        <option value="people_vaccinated"> People vaccinated </option>      
-                        <option value="people_fully_vaccinated" > People fully vaccinated  </option>
-                        <option value="percentage_of_people_vaccinated">Percentage Of People vaccinated </option>
-                        <option value="percentage_of_people_fully_vaccinated">Percentage Of People fully vaccinated</option>
-                        <option value="new_vaccinations_smoothed_per_million"> New vaccinations per million </option>
 
-                        <option value="stringency_index"> Stringency Index </option>
-                        <option value="life_expectancy"> Life Expectancy </option> 
-                        <option value="gdp_per_capita"> Gdp per Capita </option>
-                        <option value="handwashing_facilities"> Handwashing Facilities </option>
-                        <option value="human_development_index"> Human Development Index </option>
-                        <option value="hospital_beds_per_thousand"> Hospital beds per Thousand </option>
-                        <option value="male_smokers"> Male smokers (Share of male population) </option>
-                        <option value="female_smokers"> Female Smokers (Share of female population) </option>
-                        <option value="diabetes_prevalence"> Diabetes Prevalence </option>
-                        <option value="cardiovasc_death_rate"> Cardiovasc Death Rate </option>
-                        <option value="extreme_poverty"> Extreme Poverty </option>
-                        <option value="aged_70_older"> Aged 70 older </option>
-                        <option value="median_age"> Median Age </option>
-                        <option value="population"> Population </option>
-                    </select>
-                    
-                    <label for="features">Choose a feature 2:</label>
-                    <select class="form-control" id="scatter-select-yfeature">
-                        <option value="total_deaths_per_million"> Total Deaths per million </option>
-                        <option value='total_cases'> Total Cases </option>
-                        <option value='total_cases_per_million'> Total Cases per million </option>
-                        <option value='new_cases_smoothed'> New Cases </option>
-                        <option value='new_cases_smoothed_per_million'> New Cases per million </option>
-                        <option value="total_deaths"> Total Deaths </option>
-                        <option value="new_deaths_smoothed"> New Deaths </option>
-                        <option value="new_deaths_smoothed_per_million"> New Deaths per Million </option>         
-                        <option value="reproduction_rate"> Reproduction Rate </option>
-                        <option value="icu_patients_per_million"> ICU Patients per million </option>
-                        <option value="hosp_patients_per_million"> Hospital patients per million </option>      
-                        <option value="total_tests"> Total Tests </option> total_vaccinations
-                        <option value="total_vaccinations"> Total Vaccinations </option>
-                        <option value="people_vaccinated"> People vaccinated </option>      
-                        <option value="people_fully_vaccinated" > People fully vaccinated  </option>
-                        <option value="percentage_of_people_vaccinated">Percentage Of People vaccinated </option>
-                        <option value="percentage_of_people_fully_vaccinated">Percentage Of People fully vaccinated</option>
-                        <option value="new_vaccinations_smoothed_per_million"> New vaccinations per million </option>
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <label for="features">Choose x-axis feature:</label>
+                            <select class="form-control" id="scatter-select-xfeature">
+                                <option value='total_cases_per_million'> Total Cases per million </option>
+                                <option value='total_cases'> Total Cases </option>
+                                <option value='new_cases_smoothed'> New Cases </option>
+                                <option value='new_cases_smoothed_per_million'> New Cases per million </option>
+                                <option value="total_deaths"> Total Deaths </option>
+                                <option value="total_deaths_per_million"> Total Deaths per million </option>
+                                <option value="new_deaths_smoothed"> New Deaths </option>
+                                <option value="new_deaths_smoothed_per_million"> New Deaths per Million </option>       
+                                <option value="reproduction_rate"> Reproduction Rate </option>
+                                <option value="icu_patients_per_million"> ICU Patients per million </option>
+                                <option value="hosp_patients_per_million"> Hospital patients per million </option>      
+                                <option value="total_tests"> Total Tests </option> total_vaccinations
+                                <option value="total_vaccinations"> Total Vaccinations </option>
+                                <option value="people_vaccinated"> People vaccinated </option>      
+                                <option value="people_fully_vaccinated" > People fully vaccinated  </option>
+                                <option value="percentage_of_people_vaccinated">Percentage Of People vaccinated </option>
+                                <option value="percentage_of_people_fully_vaccinated">Percentage Of People fully vaccinated</option>
+                                <option value="new_vaccinations_smoothed_per_million"> New vaccinations per million </option>
+        
+                                <option value="stringency_index"> Stringency Index </option>
+                                <option value="life_expectancy"> Life Expectancy </option> 
+                                <option value="gdp_per_capita"> Gdp per Capita </option>
+                                <option value="handwashing_facilities"> Handwashing Facilities </option>
+                                <option value="human_development_index"> Human Development Index </option>
+                                <option value="hospital_beds_per_thousand"> Hospital beds per Thousand </option>
+                                <option value="male_smokers"> Male smokers (Share of male population) </option>
+                                <option value="female_smokers"> Female Smokers (Share of female population) </option>
+                                <option value="diabetes_prevalence"> Diabetes Prevalence </option>
+                                <option value="cardiovasc_death_rate"> Cardiovasc Death Rate </option>
+                                <option value="extreme_poverty"> Extreme Poverty </option>
+                                <option value="aged_70_older"> Aged 70 older </option>
+                                <option value="median_age"> Median Age </option>
+                                <option value="population"> Population </option>
+                            </select>
+                        </div>
 
-                        <option value="stringency_index"> Stringency Index </option>
-                        <option value="life_expectancy"> Life Expectancy </option> 
-                        <option value="gdp_per_capita"> Gdp per Capita </option>
-                        <option value="handwashing_facilities"> Handwashing Facilities </option>
-                        <option value="human_development_index"> Human Development Index </option>
-                        <option value="hospital_beds_per_thousand"> Hospital beds per Thousand </option>
-                        <option value="male_smokers"> Male smokers (Share of male population) </option>
-                        <option value="female_smokers"> Female Smokers (Share of female population) </option>
-                        <option value="diabetes_prevalence"> Diabetes Prevalence </option>
-                        <option value="cardiovasc_death_rate"> Cardiovasc Death Rate </option>
-                        <option value="extreme_poverty"> Extreme Poverty </option>
-                        <option value="aged_70_older"> Aged 70 older </option>
-                        <option value="median_age"> Median Age </option>
-                        <option value="population"> Population </option>
-                    </select>
+                        <div class="col">
+                            <div class="row">
+                                <label for="features">Choose y-axis feature:</label>
+                                <select class="form-control" id="scatter-select-yfeature">
+                                    <option value="total_deaths_per_million"> Total Deaths per million </option>
+                                    <option value='total_cases'> Total Cases </option>
+                                    <option value='total_cases_per_million'> Total Cases per million </option>
+                                    <option value='new_cases_smoothed'> New Cases </option>
+                                    <option value='new_cases_smoothed_per_million'> New Cases per million </option>
+                                    <option value="total_deaths"> Total Deaths </option>
+                                    <option value="new_deaths_smoothed"> New Deaths </option>
+                                    <option value="new_deaths_smoothed_per_million"> New Deaths per Million </option>         
+                                    <option value="reproduction_rate"> Reproduction Rate </option>
+                                    <option value="icu_patients_per_million"> ICU Patients per million </option>
+                                    <option value="hosp_patients_per_million"> Hospital patients per million </option>      
+                                    <option value="total_tests"> Total Tests </option> total_vaccinations
+                                    <option value="total_vaccinations"> Total Vaccinations </option>
+                                    <option value="people_vaccinated"> People vaccinated </option>      
+                                    <option value="people_fully_vaccinated" > People fully vaccinated  </option>
+                                    <option value="percentage_of_people_vaccinated">Percentage Of People vaccinated </option>
+                                    <option value="percentage_of_people_fully_vaccinated">Percentage Of People fully vaccinated</option>
+                                    <option value="new_vaccinations_smoothed_per_million"> New vaccinations per million </option>
 
-                    <script>
-                    // Upon change of second feature, scatter plot is redrawn
-                    d3.select('#scatter-select-xfeature').on('change', function() {
-                        scatter_xfeature = this.value;
-                        drawScatterPlot();
-                    });
-                    d3.select('#scatter-select-yfeature').on('change', function() {
-                        scatter_yfeature = this.value;
-                        drawScatterPlot();
-                    });
-                    </script>
+                                    <option value="stringency_index"> Stringency Index </option>
+                                    <option value="life_expectancy"> Life Expectancy </option> 
+                                    <option value="gdp_per_capita"> Gdp per Capita </option>
+                                    <option value="handwashing_facilities"> Handwashing Facilities </option>
+                                    <option value="human_development_index"> Human Development Index </option>
+                                    <option value="hospital_beds_per_thousand"> Hospital beds per Thousand </option>
+                                    <option value="male_smokers"> Male smokers (Share of male population) </option>
+                                    <option value="female_smokers"> Female Smokers (Share of female population) </option>
+                                    <option value="diabetes_prevalence"> Diabetes Prevalence </option>
+                                    <option value="cardiovasc_death_rate"> Cardiovasc Death Rate </option>
+                                    <option value="extreme_poverty"> Extreme Poverty </option>
+                                    <option value="aged_70_older"> Aged 70 older </option>
+                                    <option value="median_age"> Median Age </option>
+                                    <option value="population"> Population </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
+                <script>
+                // Upon change of second feature, scatter plot is redrawn
+                d3.select('#scatter-select-xfeature').on('change', function() {
+                    scatter_xfeature = this.value;
+                    drawScatterPlot();
+                });
+                d3.select('#scatter-select-yfeature').on('change', function() {
+                    scatter_yfeature = this.value;
+                    drawScatterPlot();
+                });
+                </script>
 
                 <!-- Scatter plot to show correlation between two features -->
                 <div id="scatter" style="margin-left: 1em;"></div>
 
                     <script>
-                        var margin_scatter = {top: 30, right: 50, bottom: 100, left: 130},
-                            width_scatter = 1000 - margin_scatter.left - margin_scatter.right,
+                        var margin_scatter = {top: 50, right: 70, bottom: 100, left: 130},
+                            width_scatter = 1100 - margin_scatter.left - margin_scatter.right,
                             height_scatter = 800 - margin_scatter.top - margin_scatter.bottom;
                         
                         var scatter = d3.select("#scatter")
                                 .append("svg")
                                 .attr("class", "scatter-plot")
-                                    .attr("width", width_scatter + margin_scatter.left + margin_scatter.right + 140)
+                                    .attr("width", width_scatter + margin_scatter.left + margin_scatter.right + 180)
                                     .attr("height", height_scatter + margin_scatter.top + margin_scatter.bottom)
                                 .append("g")
                                     .attr("transform",
@@ -1182,7 +1203,7 @@
                                 .attr("class", "legend-scatter")
                                 .attr("width", 200)
                                 .attr("height", 382)
-                                .attr("transform", "translate(" + (width_scatter + 50) + "," + (40) + ")");
+                                .attr("transform", "translate(" + (width_scatter + 110) + "," + (40) + ")");
 
                         legend_scatter.append("rect")
                             // .attr("class", "legend-scatter")
