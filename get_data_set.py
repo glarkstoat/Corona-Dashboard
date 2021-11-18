@@ -1,9 +1,9 @@
-# Gets the newest version of the df set, manipulates it and saves it to a csv file.
+# Gets the newest version of the data set, manipulates it and saves it to a csv file.
 # %%
 import requests
 import pandas as pd
 
-# Downloads the latest version of the df set
+# Downloads the latest version of the data set
 csv_url = "https://covid.ourworldindata.org/data/owid-covid-data.csv"
 req = requests.get(csv_url)
 url_content = req.content
