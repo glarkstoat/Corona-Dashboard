@@ -1,6 +1,5 @@
 <!--
                 TODOS:
-                .) Use bootstrap containers to improve layout
                 .) Tooltips under/beneath the charts to explain how to use them 
 -->
 
@@ -143,8 +142,8 @@
                                 .column('total_cases')
                                 .duration(100)
                                 .scale(280)
-                                .height(screen.height / 1.6)
-                                .width(screen.width / 1.7)
+                                .height(850)
+                                .width(1450)
                                 .format(d3.format(".5s"))
                                 .legend(true)
                                 .zoomFactor(1)
@@ -181,7 +180,7 @@
                         </div>
                         <div class="col">
                             <div class="row">
-                                <div id="time_slider"></div>
+                                <svg width="950" height="80" id="time_slider"></svg>
                             </div>
                         </div>
                     </div>
@@ -190,15 +189,10 @@
                 <!-- Time slider for map, line chart, bar chart and scatter plot -->
                 <script>
 
-                    var margin_slider = {right: 30, left: 20, top: 0, bottom: 0},
-                        width_slider = screen.width / 3,
-                        height_slider = screen.height / 20 ;
-                    
-                    var svg = d3.select("#time_slider").append("svg")
-                                .attr("width", width_slider + margin_slider.left + margin_slider.right)
-                                .attr("height", height_slider + margin_slider.top + margin_slider.bottom)
-                                .append("g")
-                                .attr("transform", "translate(" + margin_slider.left + "," + margin_slider.top + ")");
+                    var svg = d3.select("#time_slider"),
+                        margin_slider = {right: 0, left: 0},
+                        width_slider = 900 - margin_slider.left - margin_slider.right,
+                        height_slider = +svg.attr("height");
 
                     var slider = svg.append("g")
                         .attr("class", "slider")
@@ -491,8 +485,8 @@
                         };
 
                         var margin_barChart = {top: 30, right: 150, bottom: 100, left: 160},
-                            width_barChart = screen.width / 2.5 - margin_barChart.left - margin_barChart.right,
-                            height_barChart = screen.height / 2.4 - margin_barChart.top - margin_barChart.bottom;
+                            width_barChart = 1000 - margin_barChart.left - margin_barChart.right,
+                            height_barChart = 600 - margin_barChart.top - margin_barChart.bottom;
                         
                         var barChart = d3.select("#barChart")
                                 .append("svg")
@@ -700,26 +694,26 @@
                                         .remove();
                         };
 
-                        var margin_line = {top: 20, right: 200, bottom: 90, left: 180},
-                            width_line = screen.width / 2.5 - margin_line.left - margin_line.right, 
-                            height_line = screen.height / 2.6 - margin_line.top - margin_line.bottom;
+                        var margin = {top: 20, right: 200, bottom: 90, left: 180},
+                            width = 1000 - margin.left - margin.right, 
+                            height = 550 - margin.top - margin.bottom;
                                             
                         var lineChart = d3.select("#line-chart").append("svg")
                                 .attr("class", "line-chart")
-                                .attr("width", width_line + margin_line.left + margin_line.right)
-                                .attr("height", height_line + margin_line.top + margin_line.bottom)
+                                .attr("width", width + margin.left + margin.right)
+                                .attr("height", height + margin.top + margin.bottom)
                                 .append("g")
-                                .attr("transform", "translate(" + margin_line.left + "," + margin_line.top + ")");
+                                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
                         var x_linechart = d3.scaleTime()
                             .domain([start_date, end_date])
-                            .range([0, width_line])
+                            .range([0, width])
                             .clamp(true);
-                        var xAxis_line = d3.axisBottom(x_linechart).tickSize(-height_line);
+                        var xAxis_line = d3.axisBottom(x_linechart).tickSize(-height);
                         
                         lineChart.append("g")
                             .attr("class", "x-axis")
-                            .attr("transform", "translate(0," + height_line + ")")
+                            .attr("transform", "translate(0," + height + ")")
                             .call(xAxis_line)
                             .call(g => g.select(".domain").remove())
                                 .selectAll("text")  
@@ -730,15 +724,15 @@
                                     .attr("transform", "rotate(-35)");
 
                         lineChart.append("text")
-                                .attr("transform", "translate(" + (width_line/2-20) + "," + (height_line + 75 ) + ")")
+                                .attr("transform", "translate(" + (width/2-20) + "," + (height + 75 ) + ")")
                                 .style("text-anchor", "middle")
                                 .attr("font-size", 20)
                                 .attr("font-weight", "bold")
                                 .text("Time");
                         
                         var y_linechart = d3.scaleLinear()
-                            .range([height_line, 0]);
-                        var yAxis_line = d3.axisLeft(y_linechart).tickSize(-width_line+10).tickFormat(x => d3.format(".2s")(x)).ticks(6, "~s");
+                            .range([height, 0]);
+                        var yAxis_line = d3.axisLeft(y_linechart).tickSize(-width+10).tickFormat(x => d3.format(".2s")(x)).ticks(6, "~s");
                                         
                         // y-axis tick labels
                         lineChart.append("g")
@@ -753,7 +747,7 @@
                                     .attr("transform", "rotate(-35)");
 
                         y_feature = lineChart.append("text")
-                                    .attr("transform", "translate(" + -60 + "," + (height_line/2) + ")rotate(-90)")
+                                    .attr("transform", "translate(" + -60 + "," + (height/2) + ")rotate(-90)")
                                     .style("text-anchor", "middle")
                                     .attr("font-size", 20)
                                     .attr("font-weight", "bold");
@@ -769,7 +763,7 @@
                                         .attr("class", "legend")
                                         .attr("width", 200)
                                         .attr("height", 200)
-                                        .attr("transform", "translate(" + (width_line + 20) + "," + (40) + ")");
+                                        .attr("transform", "translate(" + (width + 20) + "," + (40) + ")");
 
                         legend.append("rect")
                                 .attr('class', 'legend-bg')
@@ -1141,8 +1135,8 @@
 
                     <script>
                         var margin_scatter = {top: 50, right: 70, bottom: 100, left: 130},
-                            width_scatter = screen.width / 2.2 - margin_scatter.left - margin_scatter.right,
-                            height_scatter = screen.height / 1.7 - margin_scatter.top - margin_scatter.bottom;
+                            width_scatter = 1100 - margin_scatter.left - margin_scatter.right,
+                            height_scatter = 800 - margin_scatter.top - margin_scatter.bottom;
                         
                         var scatter = d3.select("#scatter")
                                 .append("svg")
