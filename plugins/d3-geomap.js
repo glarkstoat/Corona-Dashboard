@@ -208,7 +208,7 @@ function () {
       self.data = selection.datum();
       //console.log(self.data);
       if (!self.properties.width) self.properties.width = selection.node().getBoundingClientRect().width;
-      if (!self.properties.height) self.properties.height = self.properties.width / 1.92;
+      if (!self.properties.height) self.properties.height = self.properties.width / 1.5;
       if (!self.properties.scale) self.properties.scale = self.properties.width / 5.4;
       if (!self.properties.translate) self.properties.translate = [self.properties.width / 2, self.properties.height / 2];
       self.svg = selection.append('svg').attr('width', self.properties.width).attr('height', self.properties.height);
