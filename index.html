@@ -177,7 +177,7 @@
                 <div class="container">
                     <div class="row">
                         <div class="col-2">
-                            <button id="play-button">Play</button>
+                            <button id="play-button" style="font-size : 100%;">Play</button>
                         </div>
                         <div class="col">
                             <div class="row">
@@ -453,7 +453,7 @@
                     function resetTimer() {
                         clearInterval(timer);
                         playButton.text("Play")
-                        .attr("font-size", "1px");
+                        .attr("font-size", 1);
                     }
 
                     var playButton = d3.select("#play-button");
