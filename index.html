@@ -1276,7 +1276,7 @@
                             .data(values_pop.reverse())
                             .enter().append("circle")
                                 .attr("cx", screen.width / 100)
-                                .attr("cy", function(d, i) { return y_values_pop[i]+15; })
+                                .attr("cy", function(d, i) { return y_values_pop[i] + screen.height / 80; })
                                 .attr("r", function(d) { return scale_population(d) * screen.width / 1800;})
                                 .attr("fill", "gray");
 
