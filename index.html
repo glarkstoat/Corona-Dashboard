@@ -1205,8 +1205,8 @@
                                 .attr("transform", "translate(" + (width_scatter + 110) + "," + (40) + ")");
 
                         legend_scatter.append("rect")
-                                .attr('width', 140)
-                                .attr('height', 382)
+                                .attr('width', screen.width / 10)
+                                .attr('height', screen.height / 3)
                                 .style('fill', "#e0e0e0");
                         
                         const continents_colors = {"Asia":"rgb(201, 38, 8)", "Oceania":"rgb(201, 38, 8)", 
