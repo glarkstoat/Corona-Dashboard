@@ -328,8 +328,8 @@
                                             .attr("class", "bar-values")   
                                             .attr("font-size", "" + screen.height / 110 + "px")
                                             .attr("font-weight", "Normal")
-                                            .attr("x", function(d) { return x_barChart(+d[global_feature]) + 10; })
-                                            .attr("y", function(d) { return y_barChart(d.location) + 14; })
+                                            .attr("x", function(d) { return x_barChart(+d[global_feature]) + screen.width / 200; })
+                                            .attr("y", function(d) { return y_barChart(d.location) + screen.height / 100; })
                                             .text(function(d) { return d3.format(".4s")(+d[global_feature]); });
 
                         /* end ---------- drawbarchart ------------ end */
@@ -605,8 +605,8 @@
                                                 .attr("class", "bar-values")   
                                                 .attr("font-size", "" + screen.height / 110 + "px")
                                                 .attr("font-weight", "Normal")
-                                                .attr("x", function(d) { return x_barChart(+d[global_feature]) + 10; })
-                                                .attr("y", function(d) { return y_barChart(d.location) + 14; })
+                                                .attr("x", function(d) { return x_barChart(+d[global_feature]) + screen.width / 200; })
+                                                .attr("y", function(d) { return y_barChart(d.location) + screen.height / 100; })
                                                 .text(function(d) { return d3.format(".4s")(+d[global_feature]); });
                         };
 
@@ -1328,7 +1328,7 @@
                                 .call(xAxis_scatter)
                                 .call(g => g.select(".domain").remove())
                                     .selectAll("text")
-                                    .attr("font-size", "15px")
+                                    .attr("font-size", screen.height / 110)
                                     .style("text-anchor", "end")
                                     .attr("dx", "-.8em")
                                     .attr("dy", ".15em")
@@ -1340,7 +1340,7 @@
                                 .call(yAxis_scatter)
                                 .call(g => g.select(".domain").remove())
                                     .selectAll("text")
-                                    .attr("font-size", "15px")
+                                    .attr("font-size", screen.height / 110)
                                     .style("text-anchor", "end")
                                     .attr("dx", "-1.1em")
                                     .attr("dy", "-0.35em")
