@@ -64,12 +64,12 @@ h1 {
 .track {
   stroke: #000;
   stroke-opacity: 0.3;
-  stroke-width: 10px;
+  stroke-width: 2%;
 }
 
 .track-inset {
   stroke: rgba(255, 255, 255, 0.876);
-  stroke-width: 15px;
+  stroke-width: 2%;
 }
 
 .track-overlay {
