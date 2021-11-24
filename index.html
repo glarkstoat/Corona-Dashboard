@@ -1215,16 +1215,14 @@
                         cvs = Object.keys(continents_colors);
                                                 
                         var legend_bubbles = legend_scatter.append("g")
-                                        //.attr("class", "legend-markers")
                                         .attr("width", screen.width / 100)
                                         .attr("height", screen.height / 20)
-                                        .attr("transform", "translate(" + (5) + "," + 20 + ")");
+                                        .attr("transform", "translate(" + (5) + "," + screen.height / 60 + ")");
                         
                         var legend_continents = legend_scatter.append("g")
-                                        //.attr("class", "legend-countries")
                                         .attr("width", screen.width / 10)
                                         .attr("height", screen.height / 3)
-                                        .attr("transform", "translate(" + (5) + "," + 20 + ")");
+                                        .attr("transform", "translate(" + (5) + "," + screen.height / 60 + ")");
                         
                         legend_scatter.append("text")
                                     .attr("font-size", screen.height / 90)
@@ -1237,7 +1235,7 @@
                             .data(cvs)
                             .enter().append("circle")
                                 .attr("cx", 5)
-                                .attr("cy", function(d, i) { return (i+0.2)*20; })
+                                .attr("cy", function(d, i) { return (i+screen.height/7000)*screen.height / 60; })
                                 .attr("r", screen.height / 300)
                                 .attr("fill", function(d, i) {
                                         return continents_colors[d];
@@ -1249,14 +1247,14 @@
                                     .attr("font-size", screen.height / 100)
                                     .attr("font-weight", "Normal")
                                     .attr("x", 25)
-                                    .attr("y", function(d, i) { return (i+0.4)*20; })
+                                    .attr("y", function(d, i) { return (i+screen.height/4000)*screen.height / 60; })
                                     .text(function(d) { return d; });
 
                         legend_scatter.append("text")
                                     .attr("font-size", screen.height / 90)
                                     .attr("font-weight", "Bold")
                                     .attr("x", 0)
-                                    .attr("y", 155)
+                                    .attr("y", screen.height / 8)
                                         .text("Population");
 
                         // Bubbles in the legend to showcase the size of the population
