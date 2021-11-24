@@ -18,14 +18,14 @@ label {
 
 .pull-right{
   width: 50%;
-  margin-top: 5%;
+  margin-top: 2%;
   margin-left: 10%;
 }
 
 .wrapper {
   display: grid;
-  grid-template-columns: 50% 50%;
-  column-gap: 8%;
+  grid-template-columns: 58% 42%;
+  column-gap: 0%;
   row-gap: 0px;
   background-color: rgba(212, 212, 212, 0.698);
 }
