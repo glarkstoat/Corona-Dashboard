@@ -232,7 +232,7 @@
 
                     var handle = slider.insert("circle", ".track-overlay")
                             .attr("class", "handle")
-                            .attr("r", screen.height / 90);
+                            .attr("r", screen.height / 110);
 
                     // Sets the initial position of the handle to the most recent date
                     handle.attr("cx", width_slider);
@@ -326,7 +326,7 @@
                                     .enter()
                                         .append("text")
                                             .attr("class", "bar-values")   
-                                            .attr("font-size", 13)
+                                            .attr("font-size", "" + screen.height / 110 + "px")
                                             .attr("font-weight", "Normal")
                                             .attr("x", function(d) { return x_barChart(+d[global_feature]) + 10; })
                                             .attr("y", function(d) { return y_barChart(d.location) + 14; })
@@ -390,7 +390,7 @@
                             .call(xAxis_line)
                             .call(g => g.select(".domain").remove())
                             .selectAll("text")  
-                                .attr("font-size", "15px")
+                                .attr("font-size", "" + screen.height / 110 + "px")
                                 .style("text-anchor", "end")
                                 .attr("dx", "-.1em")
                                 .attr("dy", ".55em")
@@ -401,7 +401,7 @@
                             .call(yAxis_line)
                             .call(g => g.select(".domain").remove())
                             .selectAll("text")  
-                                            .attr("font-size", "15px")
+                                            .attr("font-size", "" + screen.height / 110 + "px")
                                             .style("text-anchor", "end")
                                             .attr("dx", "-.5em")
                                             .attr("dy", "-0.5em")
