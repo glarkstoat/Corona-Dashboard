@@ -780,14 +780,14 @@
 
                         var legend_colors = legend.append("g")
                                         .attr("class", "legend-markers")
-                                        .attr("width", 10)
-                                        .attr("height", 170)
+                                        .attr("width", screen.width / 100)
+                                        .attr("height", screen.height / 7)
                                         .attr("transform", "translate(" + (5) + "," + 20 + ")");
                         
                         var legend_countries = legend.append("g")
                                         .attr("class", "legend-countries")
-                                        .attr("width", 200)
-                                        .attr("height", 170)
+                                        .attr("width", screen.width / 15)
+                                        .attr("height", screen.height / 7)
                                         .attr("transform", "translate(" + (5) + "," + 20 + ")");
                     
                         // Draws the legend of the line chart
@@ -807,14 +807,14 @@
                                                             color = d3.interpolateOrRd(color_scale(d[1]));                             
                                                             return color;
                                                         })
-                                            .attr("width", 10)
-                                            .attr("height", 10);
+                                            .attr("width", screen.width / 250)
+                                            .attr("height", screen.width / 250);
                             
                             legend_countries.selectAll("text")
                                     .data(values)
                                     .enter()
                                         .append("text")
-                                            .attr("font-size", 14)
+                                            .attr("font-size", screen.width / 200)
                                             .attr("font-weight", function(d) { return (d[0] === selected_country) ? "bold" : "Normal"; })
                                             .attr("x", 25)
                                             .attr("y", function(d, i) { return i*20; })
