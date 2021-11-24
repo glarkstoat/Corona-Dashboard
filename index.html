@@ -1172,7 +1172,7 @@
                                 .attr("transform", "rotate(-35)");
 
                         var x_feature_scatter = scatter.append("text")
-                                .attr("transform", "translate(" + (width_scatter/2) + "," + (height_scatter + 90) + ")")
+                                .attr("transform", "translate(" + (width_scatter/2) + "," + (height_scatter + screen.width / 30) + ")")
                                 .attr("font-size", screen.height / 70)
                                 .attr("font-weight", "bold")
                                 .style("text-anchor", "middle")
@@ -1194,7 +1194,7 @@
                                 .attr("transform", "rotate(-35)");
 
                         var y_feature_scatter = scatter.append("text")
-                                        .attr("transform", "translate(" + -100 + "," + (height_scatter/2) + ")rotate(-90)")
+                                        .attr("transform", "translate(" + -screen.width / 30 + "," + (height_scatter/2) + ")rotate(-90)")
                                         .style("text-anchor", "middle")
                                         .attr("font-size", screen.height / 70)
                                         .attr("font-weight", "bold")
@@ -1202,8 +1202,8 @@
 
                         var legend_scatter = scatter.append("g")
                                 .attr("class", "legend-scatter")
-                                .attr("width", 200)
-                                .attr("height", 382)
+                                .attr("width", screen.width / 10)
+                                .attr("height", screen.height / 3)
                                 .attr("transform", "translate(" + (width_scatter + 110) + "," + (40) + ")");
 
                         legend_scatter.append("rect")
