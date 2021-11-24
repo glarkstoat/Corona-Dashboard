@@ -207,7 +207,7 @@
                     // Contains the selected date
                     var nameContainer = slider.append("text")
                         .attr("transform", "translate(" + (width_slider/2 - 130)  + "," + -20 +")")
-                        .attr("font-size", "22px");
+                        .attr("font-size", "" + screen.height / 70 + "px");
     
                     // Shows selected date above the slider
                     const showName = text => nameContainer.text("Selected Date: " + text);
@@ -232,7 +232,7 @@
 
                     var handle = slider.insert("circle", ".track-overlay")
                             .attr("class", "handle")
-                            .attr("r", 12);
+                            .attr("r", screen.height / 90);
 
                     // Sets the initial position of the handle to the most recent date
                     handle.attr("cx", width_slider);
