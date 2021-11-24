@@ -509,7 +509,7 @@
                         barChart.append("text")
                         .attr("transform", "translate(" + (width_barChart/2 - 70) + " ," + 
                                                     (-5) + ")")
-                        .attr("font-size", "20px")
+                        .attr("font-size", "" + screen.height / 70 + "px")
                         .attr("stroke", "black")
                         .style("font-weight", "bold")
                         .text("Top-20 Countries");
@@ -517,7 +517,7 @@
                         // x-axis label
                         var x_feature_barChart = barChart.append("text")
                                 .attr("transform", "translate(" + (width_barChart/2) + " ," + 
-                                                        (height_barChart + 60) + ")")
+                                                        (height_barChart + height_barChart / 7) + ")")
                                 .attr("font-size", screen.height / 70)
                                 .attr("font-weight", "bold")
                                 .style("text-anchor", "middle")
