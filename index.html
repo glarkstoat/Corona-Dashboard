@@ -517,7 +517,7 @@
                         var x_feature_barChart = barChart.append("text")
                                 .attr("transform", "translate(" + (width_barChart/2) + " ," + 
                                                         (height_barChart + 60) + ")")
-                                .attr("font-size", 20)
+                                .attr("font-size", screen.height / 70)
                                 .attr("font-weight", "bold")
                                 .style("text-anchor", "middle")
                                 .text(feature_names[global_feature]);
@@ -733,7 +733,7 @@
                         lineChart.append("text")
                                 .attr("transform", "translate(" + (width_line/2-20) + "," + (height_line + 75 ) + ")")
                                 .style("text-anchor", "middle")
-                                .attr("font-size", 20)
+                                .attr("font-size", screen.height / 70)
                                 .attr("font-weight", "bold")
                                 .text("Time");
                         
@@ -756,7 +756,7 @@
                         y_feature = lineChart.append("text")
                                     .attr("transform", "translate(" + -60 + "," + (height_line/2) + ")rotate(-90)")
                                     .style("text-anchor", "middle")
-                                    .attr("font-size", 20)
+                                    .attr("font-size", screen.height / 70)
                                     .attr("font-weight", "bold");
 
                         // If different feature is selected from the dropdown menu
@@ -1172,7 +1172,7 @@
 
                         var x_feature_scatter = scatter.append("text")
                                 .attr("transform", "translate(" + (width_scatter/2) + "," + (height_scatter + 90) + ")")
-                                .attr("font-size", 25)
+                                .attr("font-size", screen.height / 70)
                                 .attr("font-weight", "bold")
                                 .style("text-anchor", "middle")
                                 .text(feature_names[scatter_xfeature]);
@@ -1195,7 +1195,7 @@
                         var y_feature_scatter = scatter.append("text")
                                         .attr("transform", "translate(" + -100 + "," + (height_scatter/2) + ")rotate(-90)")
                                         .style("text-anchor", "middle")
-                                        .attr("font-size", 25)
+                                        .attr("font-size", screen.height / 70)
                                         .attr("font-weight", "bold")
                                         .text(feature_names[scatter_yfeature]);
 
