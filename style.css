@@ -17,9 +17,13 @@ label {
 }
 
 .pull-right{
-  width: 40%;
+  width: 30%;
   margin-top: 2%;
   margin-left: 10%;
+}
+
+select option{
+  font-size: 80%;
 }
 
 .wrapper {
