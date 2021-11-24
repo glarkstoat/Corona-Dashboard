@@ -192,7 +192,7 @@
 
                     var margin_slider = {right: 30, left: 20, top: 0, bottom: 0},
                         width_slider = screen.width / 3,
-                        height_slider = screen.height / 16 ;
+                        height_slider = screen.height / 15 ;
                     
                     var svg = d3.select("#time_slider").append("svg")
                                 .attr("width", width_slider + margin_slider.left + margin_slider.right)
@@ -548,7 +548,7 @@
                                 .call(d3.axisBottom(x_barChart).tickSize(-height_barChart).tickFormat(x => d3.format(".2s")(x)).ticks(5, "~s"))
                                 .call(g => g.select(".domain").remove())
                                 .selectAll("text")
-                                    .attr("font-size", "13px")
+                                    .attr("font-size", "" + screen.height / 110 + "px")
                                     .style("text-anchor", "end")
                                     .attr("dx", "-0.5em")               
                                     .attr("dy", "0.4em")
@@ -561,7 +561,7 @@
                                 .attr("class", "y-axis")
                                 .call(d3.axisLeft(y_barChart).tickSize(0))
                                 .selectAll("text")
-                                    .attr("font-size", "13px")
+                                    .attr("font-size", "" + screen.height / 110 + "px")
                                     .style("text-anchor", "end")
                                     .attr("dx", "-0.2em")
                                     .attr("dy", ".2em")
@@ -602,7 +602,7 @@
                                         .enter()
                                             .append("text")
                                                 .attr("class", "bar-values")   
-                                                .attr("font-size", 13)
+                                                .attr("font-size", "" + screen.height / 110 + "px")
                                                 .attr("font-weight", "Normal")
                                                 .attr("x", function(d) { return x_barChart(+d[global_feature]) + 10; })
                                                 .attr("y", function(d) { return y_barChart(d.location) + 14; })
