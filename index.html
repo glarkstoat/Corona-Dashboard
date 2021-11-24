@@ -190,7 +190,7 @@
                 <!-- Time slider for map, line chart, bar chart and scatter plot -->
                 <script>
 
-                    var margin_slider = {right: 70, left: 20, top: 0, bottom: 0},
+                    var margin_slider = {right: 80, left: 0, top: 0, bottom: 0},
                         width_slider = screen.width / 3,
                         height_slider = screen.height / 15;
                     
@@ -1286,7 +1286,7 @@
                                     .attr("font-size", screen.height / 100)
                                     .attr("font-weight", "Normal")
                                     .attr("x", function(d, i) { return x_values_pop_text[i] + screen.width / 100; })
-                                    .attr("y", function(d, i) { return y_values_pop[i]+20; })
+                                    .attr("y", function(d, i) { return y_values_pop[i] + screen.height / 60; })
                                     .text(function(d) { return d; });
 
                         const updateXAxisTitleScatter = () => {
@@ -1359,9 +1359,9 @@
 
                                         scatter.append("text")
                                                 .attr("id", "mouse-over-label")
-                                                .attr("x", function() { return x_scatter(d[scatter_xfeature]) + scale_population(+d["population"]) + 8 ;})
-                                                .attr("y", function() { return y_scatter(d[scatter_yfeature]) - 8 ;})
-                                                .attr("font-size", "17px")
+                                                .attr("x", function() { return x_scatter(d[scatter_xfeature]) + scale_population(+d["population"]) + screen.width / 400 ;})
+                                                .attr("y", function() { return y_scatter(d[scatter_yfeature]) - screen.width / 400 ;})
+                                                .attr("font-size", screen.height / 90)
                                                 .text(d["location"])
 
                                     })
