@@ -206,11 +206,10 @@ function () {
 
       var self = this;
       self.data = selection.datum();
-      //console.log(self.data);
       if (!self.properties.width) self.properties.width = selection.node().getBoundingClientRect().width;
       if (!self.properties.height) self.properties.height = self.properties.width / 1.5;
       if (!self.properties.scale) self.properties.scale = self.properties.width / 5.4;
-      if (!self.properties.translate) self.properties.translate = [self.properties.width / 2, self.properties.height / 2];
+      if (!self.properties.translate) self.properties.translate = [self.properties.width / 2.1, self.properties.height / 2];
       self.svg = selection.append('svg').attr('width', self.properties.width).attr('height', self.properties.height);
       self.svg.append('rect').attr('class', 'background').attr('width', self.properties.width).attr('height', self.properties.height).on('click', self.clicked.bind(self)); // Set map projection and path.
 
@@ -365,7 +364,7 @@ function (_Geomap) {
           hLegend = hBox - hBox / (hFactor * 1.9),
           offsetText = wRect / 2,
           offsetY = self.properties.height - hBox,
-          tr = 'translate(' + offsetText + ',' + offsetText * 3 + ')'; // Remove possibly existing legend, before drawing.
+          tr = 'translate(' + 5 + offsetText + ',' + offsetText * 1 + ')'; // Remove possibly existing legend, before drawing.
 
       self.svg.select('g.legend').remove(); // Reverse a copy to not alter colors array.
 
