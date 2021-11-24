@@ -88,15 +88,15 @@ h1 {
 
 #play-button {
   background: #f08080;
-  padding-right: 2px;
+  padding-right: 0;
   border-radius: 0px;
   border: none;
   color: white;
   margin: 0px;
-  margin-left: 60%;
-  margin-top: 20%;
-  padding: 0 12px;
-  width: 40%;
+  margin-left: 0%;
+  margin-top: 50%;
+  padding: 0 0;
+  width: 80%;
   cursor: pointer;
   height: 30%;
 }
