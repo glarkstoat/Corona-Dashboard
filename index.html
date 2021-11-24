@@ -274,6 +274,7 @@
                             .selectAll("text")
                             .data(x_slider.ticks(7))
                             .enter().append("text")
+                                .attr("font-size", screen.height / 100)
                                 .attr("x", x_slider)
                                 .attr("text-anchor", "middle")
                                 .text(function(d) { return formatDate_slider(d); });
