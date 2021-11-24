@@ -771,7 +771,7 @@
                                         .attr("class", "legend")
                                         .attr("width", screen.width / 15)
                                         .attr("height", screen.height / 7)
-                                        .attr("transform", "translate(" + (width_line + 20) + "," + (40) + ")");
+                                        .attr("transform", "translate(" + (width_line + 20) + "," + (screen.height / 30) + ")");
 
                         legend.append("rect")
                                 .attr('class', 'legend-bg')
@@ -782,13 +782,13 @@
                                         .attr("class", "legend-markers")
                                         .attr("width", screen.width / 100)
                                         .attr("height", screen.height / 7)
-                                        .attr("transform", "translate(" + (5) + "," + 20 + ")");
+                                        .attr("transform", "translate(" + (5) + "," + screen.width / 100 + ")");
                         
                         var legend_countries = legend.append("g")
                                         .attr("class", "legend-countries")
                                         .attr("width", screen.width / 15)
                                         .attr("height", screen.height / 7)
-                                        .attr("transform", "translate(" + (5) + "," + 20 + ")");
+                                        .attr("transform", "translate(" + (5) + "," + screen.width / 100 + ")");
                     
                         // Draws the legend of the line chart
                         const drawLegend = (selected_country) => {
