@@ -452,7 +452,8 @@
 
                     function resetTimer() {
                         clearInterval(timer);
-                        playButton.text("Play");
+                        playButton.text("Play")
+                        .attr("font-size", "1px");
                     }
 
                     var playButton = d3.select("#play-button");
@@ -463,7 +464,7 @@
                         } 
                         else if (playButton.text() == "Play" ) {
                             timer = setInterval(update, 50);
-                            playButton.text("Pause");
+                            playButton.text("Pause").attr("font-size", "1px");
                         }
                     });
 
@@ -731,7 +732,7 @@
                                     .attr("transform", "rotate(-35)");
 
                         lineChart.append("text")
-                                .attr("transform", "translate(" + (width_line/2-20) + "," + (height_line + 75 ) + ")")
+                                .attr("transform", "translate(" + (width_line/2-20) + "," + (height_line + screen.height / 25 ) + ")")
                                 .style("text-anchor", "middle")
                                 .attr("font-size", screen.height / 70)
                                 .attr("font-weight", "bold")
@@ -754,7 +755,7 @@
                                     .attr("transform", "rotate(-35)");
 
                         y_feature = lineChart.append("text")
-                                    .attr("transform", "translate(" + -60 + "," + (height_line/2) + ")rotate(-90)")
+                                    .attr("transform", "translate(" + -screen.height / 25 + "," + (height_line/2) + ")rotate(-90)")
                                     .style("text-anchor", "middle")
                                     .attr("font-size", screen.height / 70)
                                     .attr("font-weight", "bold");
