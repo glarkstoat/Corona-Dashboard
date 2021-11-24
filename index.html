@@ -769,14 +769,14 @@
 
                         var legend = lineChart.append("g")
                                         .attr("class", "legend")
-                                        .attr("width", 200)
-                                        .attr("height", 200)
+                                        .attr("width", screen.width / 15)
+                                        .attr("height", screen.height / 7)
                                         .attr("transform", "translate(" + (width_line + 20) + "," + (40) + ")");
 
                         legend.append("rect")
                                 .attr('class', 'legend-bg')
-                                .attr('width', 170)
-                                .attr('height', 300);
+                                .attr('width', screen.width / 15)
+                                .attr('height', screen.height / 7);
 
                         var legend_colors = legend.append("g")
                                         .attr("class", "legend-markers")
