@@ -74,7 +74,7 @@ h1 {
 
 .track-overlay {
   pointer-events: stroke;
-  stroke-width: 100px;
+  stroke-width: 10%;
   stroke: transparent;
   cursor: crosshair;
 }
@@ -93,12 +93,12 @@ h1 {
   border: none;
   color: white;
   margin: 0px;
-  margin-left: 90px;
-  margin-top: 24px;
+  margin-left: 60%;
+  margin-top: 20%;
   padding: 0 12px;
-  width: 60px;
+  width: 40%;
   cursor: pointer;
-  height: 30px;
+  height: 30%;
 }
 
 #play-button:hover {
