@@ -190,9 +190,9 @@
                 <!-- Time slider for map, line chart, bar chart and scatter plot -->
                 <script>
 
-                    var margin_slider = {right: 30, left: 20, top: 0, bottom: 0},
+                    var margin_slider = {right: 70, left: 20, top: 0, bottom: 0},
                         width_slider = screen.width / 3,
-                        height_slider = screen.height / 15 ;
+                        height_slider = screen.height / 15;
                     
                     var svg = d3.select("#time_slider").append("svg")
                                 .attr("width", width_slider + margin_slider.left + margin_slider.right)
@@ -202,7 +202,7 @@
 
                     var slider = svg.append("g")
                         .attr("class", "slider")
-                        .attr("transform", "translate(" + (10) + "," + (height_slider / 2) + ")");
+                        .attr("transform", "translate(" + (screen.width / 40) + "," + (height_slider / 2) + ")");
     
                     // Contains the selected date
                     var nameContainer = slider.append("text")
