@@ -1149,7 +1149,7 @@
                         var scatter = d3.select("#scatter")
                                 .append("svg")
                                 .attr("class", "scatter-plot")
-                                    .attr("width", width_scatter + margin_scatter.left + margin_scatter.right + 180)
+                                    .attr("width", width_scatter + margin_scatter.left + margin_scatter.right + screen.width / 10)
                                     .attr("height", height_scatter + margin_scatter.top + margin_scatter.bottom)
                                 .append("g")
                                     .attr("transform",
