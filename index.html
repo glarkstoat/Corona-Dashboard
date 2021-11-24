@@ -816,7 +816,7 @@
                                         .append("text")
                                             .attr("font-size", screen.width / 200)
                                             .attr("font-weight", function(d) { return (d[0] === selected_country) ? "bold" : "Normal"; })
-                                            .attr("x", 25)
+                                            .attr("x", screen.width / 100)
                                             .attr("y", function(d, i) { return i * screen.width / 100; })
                                             .text(function(d) { return d[0]; });
                         };
