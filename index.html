@@ -1163,7 +1163,7 @@
                             .call(xAxis_scatter)
                             .call(g => g.select(".domain").remove())
                                 .selectAll("text")
-                                .attr("font-size", "" + screen.height / 110 + "px")
+                                .attr("font-size", screen.height / 110)
                                 .style("text-anchor", "end")
                                 .attr("dx", "-0.01em")
                                 .attr("dy", "1.35em")
@@ -1185,7 +1185,7 @@
                             .call(yAxis_scatter)
                             .call(g => g.select(".domain").remove())
                             .selectAll("text")
-                                .attr("font-size", "" + screen.height / 110 + "px")
+                                .attr("font-size", screen.height / 110)
                                 .style("text-anchor", "end")
                                 .attr("dx", "-1.1em")
                                 .attr("dy", "-0.35em")
@@ -1216,14 +1216,14 @@
                                                 
                         var legend_bubbles = legend_scatter.append("g")
                                         //.attr("class", "legend-markers")
-                                        .attr("width", screen.height / 100)
-                                        .attr("height", 382)
+                                        .attr("width", screen.width / 100)
+                                        .attr("height", screen.height / 20)
                                         .attr("transform", "translate(" + (5) + "," + 20 + ")");
                         
                         var legend_continents = legend_scatter.append("g")
                                         //.attr("class", "legend-countries")
-                                        .attr("width", 200)
-                                        .attr("height", 382)
+                                        .attr("width", screen.width / 10)
+                                        .attr("height", screen.height / 3)
                                         .attr("transform", "translate(" + (5) + "," + 20 + ")");
                         
                         legend_scatter.append("text")
