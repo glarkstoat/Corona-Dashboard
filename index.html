@@ -162,7 +162,9 @@
                             global_date = formatDate(end_date);
 
                             // Initially plots the map with the data from the most recent date
-                            new_data = data.filter(row => row.date === formatDate(end_date));
+                            new_data = data.filter(row => row.date === formatDate(end_date) && 
+                                                          row[global_feature].length > 0 && // don't include if there is not data
+                                                          +row[global_feature] >= 0);
                             var selection = d3.select('#map').datum(new_data);
                             map.draw(selection);
 
