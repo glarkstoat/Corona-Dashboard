@@ -1,7 +1,7 @@
 <!--
                 TODOS:
-                .) Use bootstrap containers to improve layout
                 .) Tooltips under/beneath the charts to explain how to use them 
+                .) Implement "present day" button to jump to the most recent date (hard to do this by dragging the time-scale button)
 -->
 
 <html>
@@ -42,41 +42,43 @@
             <div class="wrapper-div"> <!-- Time slider to control map and scatter plot -->
                 <div class="pull-right">
                     <label for="features">Choose a map-feature:</label>
-                    <select class="form-control" id="map-line-select">                      
-                        <option value='total_cases'> Total Cases </option>
-                        <option value='total_cases_per_million'> Total Cases per million </option>
-                        <option value='new_cases_smoothed'> New Cases </option>
-                        <option value='new_cases_smoothed_per_million'> New Cases per million </option>
-                        <option value="total_deaths"> Total Deaths </option>
-                        <option value="total_deaths_per_million"> Total Deaths per million </option>
-                        <option value="new_deaths_smoothed"> New Deaths </option>
-                        <option value="new_deaths_smoothed_per_million"> New Deaths per Million </option>
+                    <select class="form-control" id="map-line-select">    
+                        <optgroup label="Corona-related Statistics">
+                            <option value='total_cases'> Total Cases </option>
+                            <option value='total_cases_per_million'> Total Cases per Million </option>
+                            <option value='new_cases_smoothed'> New Cases </option>
+                            
+                            <option value='new_cases_smoothed_per_million'> New Cases per Million </option>
+                            <option value="total_deaths"> Total Deaths </option>
+                            <option value="total_deaths_per_million"> Total Deaths per Million </option>
+                            <option value="new_deaths_smoothed"> New Deaths </option>
+                            <option value="new_deaths_smoothed_per_million"> New Deaths per Million </option>
+                            
+                            <option value="reproduction_rate"> Reproduction Rate </option>
+                            <option value="new_vaccinations_smoothed_per_million"> New vaccinations per Million </option>
+                            
+                            <option value="percentage_of_people_vaccinated">Percentage of People vaccinated </option>
+                            <option value="percentage_of_people_fully_vaccinated">Percentage of People fully vaccinated</option>
+                            <option value="stringency_index"> Stringency Index </option>
                         
-                        <option value="reproduction_rate"> Reproduction Rate </option>
-                        <option value="icu_patients_per_million"> ICU Patients per million </option>
-                        <option value="hosp_patients_per_million"> Hospital patients per million </option>      
-                        <option value="total_tests"> Total Tests </option> total_vaccinations
-                        <option value="total_vaccinations"> Total Vaccinations </option>
-                        <option value="new_vaccinations_smoothed_per_million"> New vaccinations per million </option>
-                        
-                        <option value="people_vaccinated"> People vaccinated </option>      
-                        <option value="people_fully_vaccinated" > People fully vaccinated  </option>
-                        <option value="percentage_of_people_vaccinated">Percentage Of People vaccinated </option>
-                        <option value="percentage_of_people_fully_vaccinated">Percentage Of People fully vaccinated</option>
-                        <option value="stringency_index"> Stringency Index </option>
-                        <option value="life_expectancy"> Life Expectancy </option> 
-                        <option value="gdp_per_capita"> Gdp per Capita </option>
-                        <option value="handwashing_facilities"> Handwashing Facilities </option>
-                        <option value="human_development_index"> Human Development Index </option>
-                        <option value="hospital_beds_per_thousand"> Hospital beds per Thousand </option>
-                        <option value="male_smokers"> Male smokers (Share of male population) </option>
-                        <option value="female_smokers"> Female Smokers (Share of female population) </option>
-                        <option value="diabetes_prevalence"> Diabetes Prevalence </option>
-                        <option value="cardiovasc_death_rate"> Cardiovasc Death Rate </option>
-                        <option value="extreme_poverty"> Extreme Poverty </option>
-                        <option value="aged_70_older"> Aged 70 older </option>
-                        <option value="median_age"> Median Age </option>
-                        <option value="population"> Population </option>
+                            <option value="new_tests_smoothed_per_thousand"> New Tests per Thousand</option>  </option>
+                            <option value="new_people_vaccinated_smoothed_per_hundred"> New People Vaccinated per Hundred </option>
+                            <option value="total_boosters_per_hundred"> Total Boosters per Hundred </option>                        
+                        </optgroup>
+
+                        <optgroup label="General Information">
+                            <option value="life_expectancy"> Life Expectancy </option> 
+                            <option value="gdp_per_capita"> Gdp per Capita </option>
+                            <option value="human_development_index"> Human Development Index </option>
+                            <option value="hospital_beds_per_thousand"> Hospital beds per Thousand </option>
+                            
+                            <option value="male_smokers"> Male smokers (Share of male population) </option>
+                            <option value="female_smokers"> Female Smokers (Share of female population) </option>
+                            <option value="diabetes_prevalence"> Diabetes Prevalence </option>
+                            <option value="cardiovasc_death_rate"> Cardiovasc Death Rate </option>
+                            <option value="extreme_poverty"> Extreme Poverty </option>
+                            <option value="median_age"> Median Age </option>
+                        </optgroup>    
                     </select> 
             
                     <!-- Two dropdown menus for selecting the features for the map and the line chart (global feature)
@@ -93,33 +95,26 @@
                                                 "total_deaths_per_million": "Total Deaths per Million",
                                                 "new_deaths_smoothed" : "New Deaths",
                                                 "new_deaths_smoothed_per_million":"New Deaths per Million",
-                                                "icu_patients":"ICU Patients",
-                                                "hosp_patients":"Hospital Cases",
-                                                "total_tests":"Total Tests",
-                                                "total_vaccinations":"Total Vaccinations",
-                                                "new_vaccinations_smoothed_per_million":"New vaccinations per million",
-                                                "people_vaccinated":"People vaccinated",
-                                                "people_fully_vaccinated":"People fully vaccinated",
+                                                "new_vaccinations_smoothed_per_million":"New vaccinations per Million",
                                                 "percentage_of_people_vaccinated":"Percentage Of People vaccinated",
                                                 "percentage_of_people_fully_vaccinated":"Percentage Of People fully vaccinated",
                                                 "stringency_index":"Stringency Index",
                                                 "reproduction_rate":"Reproduction Rate",
-                                                "icu_patients_per_million":"ICU Patients per Million",
-                                                "hosp_patients_per_million":"Hospital Patients per Million",
                                                 "life_expectancy":"Life Expectancy (in yrs.)",
-                                                "handwashing_facilities":"Handwashing Facilities",
                                                 "gdp_per_capita":"GDP per Capita (in $)",
                                                 "population":"Population",
                                                 "median_age":"Median Age",
-                                                "aged_70_older":"Aged 70 or older",
                                                 "extreme_poverty":"Extreme Poverty",
                                                 "cardiovasc_death_rate":"Cardiovasc. Death Rate",
                                                 "diabetes_prevalence":"Diabetes Prevalence",
                                                 "female_smokers":"Female Smokers (Share of female population)",
                                                 "male_smokers":"Male Smokers (Share of male population)",
                                                 "hospital_beds_per_thousand":"Hospital Beds per Thousand",
-                                                "human_development_index":"Human Development Index"
-                                                };
+                                                "human_development_index":"Human Development Index",
+                                                "new_tests_smoothed_per_thousand":"New Tests per Thousand",
+                                                "new_people_vaccinated_smoothed_per_hundred":"New People vaccinated per Hundred",
+                                                "total_boosters_per_hundred":"Total Boosters per Hundred"
+                                            };
                             
                         // Upon change of first feature, map, line chart and bar chart are redrawn
                         d3.select('#map-line-select').on('change', function() {
@@ -1056,12 +1051,7 @@
                                 <option value="new_deaths_smoothed"> New Deaths </option>
                                 <option value="new_deaths_smoothed_per_million"> New Deaths per Million </option>       
                                 <option value="reproduction_rate"> Reproduction Rate </option>
-                                <option value="icu_patients_per_million"> ICU Patients per million </option>
-                                <option value="hosp_patients_per_million"> Hospital patients per million </option>      
-                                <option value="total_tests"> Total Tests </option> total_vaccinations
-                                <option value="total_vaccinations"> Total Vaccinations </option>
-                                <option value="people_vaccinated"> People vaccinated </option>      
-                                <option value="people_fully_vaccinated" > People fully vaccinated  </option>
+
                                 <option value="percentage_of_people_vaccinated">Percentage Of People vaccinated </option>
                                 <option value="percentage_of_people_fully_vaccinated">Percentage Of People fully vaccinated</option>
                                 <option value="new_vaccinations_smoothed_per_million"> New vaccinations per million </option>
@@ -1069,7 +1059,6 @@
                                 <option value="stringency_index"> Stringency Index </option>
                                 <option value="life_expectancy"> Life Expectancy </option> 
                                 <option value="gdp_per_capita"> Gdp per Capita </option>
-                                <option value="handwashing_facilities"> Handwashing Facilities </option>
                                 <option value="human_development_index"> Human Development Index </option>
                                 <option value="hospital_beds_per_thousand"> Hospital beds per Thousand </option>
                                 <option value="male_smokers"> Male smokers (Share of male population) </option>
@@ -1077,7 +1066,6 @@
                                 <option value="diabetes_prevalence"> Diabetes Prevalence </option>
                                 <option value="cardiovasc_death_rate"> Cardiovasc Death Rate </option>
                                 <option value="extreme_poverty"> Extreme Poverty </option>
-                                <option value="aged_70_older"> Aged 70 older </option>
                                 <option value="median_age"> Median Age </option>
                                 <option value="population"> Population </option>
                             </select>
@@ -1088,28 +1076,22 @@
                                 <label for="features">Choose y-axis feature:</label>
                                 <select class="form-control" id="scatter-select-yfeature">
                                     <option value="total_deaths_per_million"> Total Deaths per million </option>
-                                    <option value='total_cases'> Total Cases </option>
                                     <option value='total_cases_per_million'> Total Cases per million </option>
+                                    <option value='total_cases'> Total Cases </option>
                                     <option value='new_cases_smoothed'> New Cases </option>
                                     <option value='new_cases_smoothed_per_million'> New Cases per million </option>
                                     <option value="total_deaths"> Total Deaths </option>
                                     <option value="new_deaths_smoothed"> New Deaths </option>
-                                    <option value="new_deaths_smoothed_per_million"> New Deaths per Million </option>         
+                                    <option value="new_deaths_smoothed_per_million"> New Deaths per Million </option>       
                                     <option value="reproduction_rate"> Reproduction Rate </option>
-                                    <option value="icu_patients_per_million"> ICU Patients per million </option>
-                                    <option value="hosp_patients_per_million"> Hospital patients per million </option>      
-                                    <option value="total_tests"> Total Tests </option> total_vaccinations
-                                    <option value="total_vaccinations"> Total Vaccinations </option>
-                                    <option value="people_vaccinated"> People vaccinated </option>      
-                                    <option value="people_fully_vaccinated" > People fully vaccinated  </option>
+
                                     <option value="percentage_of_people_vaccinated">Percentage Of People vaccinated </option>
                                     <option value="percentage_of_people_fully_vaccinated">Percentage Of People fully vaccinated</option>
                                     <option value="new_vaccinations_smoothed_per_million"> New vaccinations per million </option>
-
+            
                                     <option value="stringency_index"> Stringency Index </option>
                                     <option value="life_expectancy"> Life Expectancy </option> 
                                     <option value="gdp_per_capita"> Gdp per Capita </option>
-                                    <option value="handwashing_facilities"> Handwashing Facilities </option>
                                     <option value="human_development_index"> Human Development Index </option>
                                     <option value="hospital_beds_per_thousand"> Hospital beds per Thousand </option>
                                     <option value="male_smokers"> Male smokers (Share of male population) </option>
@@ -1117,7 +1099,6 @@
                                     <option value="diabetes_prevalence"> Diabetes Prevalence </option>
                                     <option value="cardiovasc_death_rate"> Cardiovasc Death Rate </option>
                                     <option value="extreme_poverty"> Extreme Poverty </option>
-                                    <option value="aged_70_older"> Aged 70 older </option>
                                     <option value="median_age"> Median Age </option>
                                     <option value="population"> Population </option>
                                 </select>
