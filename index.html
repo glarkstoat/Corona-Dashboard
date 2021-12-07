@@ -175,10 +175,13 @@
                         <div class="col-1">
                             <button id="play-button" style="font-size : 80%;">Play</button>
                         </div>
-                        <div class="col">
+                        <div class="col-10">
                             <div class="row">
                                 <div id="time_slider"></div>
                             </div>
+                        </div>
+                        <div class="col-1">
+                            <button id="present-date-button" style="font-size : 80%;">Present Date</button>
                         </div>
                     </div>
                 </div>
@@ -276,13 +279,14 @@
                                 .text(function(d) { return formatDate_slider(d); });
                         
                     },3000);  // timeout for loading of data_full
+
                 </script>
                 
-                <!-- Play button functionality: Shows animation of evolution of data in bar, line and map chart. -->
+                <!-- Play- and present date button functionality: Shows animation of evolution of data in bar, line and map chart. -->
                 <script>
                     var counter_dates = 0; // counts which date to choose
 
-                    var update_all_charts = () => {
+                    var update_everything = () => {
                         // Updates map, line chart and bar chart at once
                         // Should prevent redundant data-loading.
 
@@ -431,15 +435,16 @@
                         if (global_date < formatDate(end_date)) { // Either at the start of the slider or in between the start and the end
                             global_date = dates[++counter_dates];
 
-                            update_all_charts();
+                            update_everything();
                         }
                         else if (global_date == formatDate(end_date)) {
                             if (counter_dates <= 0) { // Inital case where nothing happended yet (play button was not clicked yet) and slider is on end_date by default
                                 global_date = dates[counter_dates]; // resets global_date to start_date
 
-                                update_all_charts();
+                                update_everything();
                             }
                             else { // Case where slider is at the end_date but the play button was clicked before 
+                                console.log("present-date");
                                 resetTimer();
                                 counter_dates = 0; // Resets the counter to 0 once, one full animation was completed
                             }  
@@ -451,6 +456,7 @@
                         playButton.text("Play");
                     }
 
+                    // By clicking the button it shows the time evolution of all charts 
                     var playButton = d3.select("#play-button");
 
                     playButton.on("click", function () {
@@ -460,6 +466,26 @@
                         else if (playButton.text() == "Play" ) {
                             timer = setInterval(update, 50);
                             playButton.text("Pause");
+                        }
+                    });
+
+                    // By clicking this button it makes it easier to jump back to the present date. 
+                    // Very difficult to do that by just moving the slider with the mouse.
+                    var presentDateButton = d3.select("#present-date-button");
+
+                    presentDateButton.on("click", function () {
+                        if (global_date == formatDate(end_date)) {
+                            // no action required since the slider is set to the present date already
+                        }
+                        else { // slider was moved to a different position
+
+                            // Set slider back to the present date and update all charts
+                            global_date = formatDate(end_date);
+                            update_everything();
+
+                            // Simulate the initial case where the play button was not yet clicked for correct behaviour
+                            resetTimer();
+                            counter_dates = 0;
                         }
                     });
 
