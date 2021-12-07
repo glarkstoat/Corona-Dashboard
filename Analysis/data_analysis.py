@@ -52,6 +52,7 @@ plt.show()
 # %%
 sns.histplot(data[data["date"] == "2021-12-02"]["new_cases_smoothed_per_million"].dropna()) 
 
-sns.histplot(data[""]) # sharp rise in 2020
 
+# %%
+data["new_people_vaccinated_smoothed_per_hundred"]
 # %%
