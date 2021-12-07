@@ -99,7 +99,7 @@ h1 {
 }
 
 #play-button {
-  background: #f08080;
+  background: #8584847e;
   padding-right: 0;
   border-radius: 0px;
   border: none;
@@ -111,10 +111,11 @@ h1 {
   width: 80%;
   cursor: pointer;
   height: 30%;
+  transition-duration: 0.4s;
 }
 
 #present-date-button {
-  background: #f08080;
+  background: #0b530294;
   padding-right: 0;
   border-radius: 0px;
   border: none;
@@ -126,14 +127,15 @@ h1 {
   width: 80%;
   cursor: pointer;
   height: 30%;
+  transition-duration: 0.4s;
 }
 
 #play-button:hover {
-  background-color: #942525ef;
+  background-color: #858484f6;
 }
 
 #present-date-button:hover {
-  background-color: #942525ef;
+  background-color: #0b5302e1;
 }
 
 .line {
