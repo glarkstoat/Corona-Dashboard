@@ -1,7 +1,9 @@
 <!--
                 TODOS:
-                .) Tooltips under/beneath the charts to explain how to use them 
-                .) Implement "present day" button to jump to the most recent date (hard to do this by dragging the time-scale button)
+                .) Tooltips under/beneath the charts to explain how to use them (look at jQuery)
+                .) Include time slider for scatter plot
+                .) Trace for given country in scatter plot
+                .) By clicking on country in scatter plot it should get highlighted all the other countries should get low opacity 
 -->
 
 <html>
@@ -16,7 +18,8 @@
         <script src="//unpkg.com/d3@5/dist/d3.min.js"></script>
         <script src="//unpkg.com/topojson@3/dist/topojson.min.js"></script>
         <script src="plugins/d3-geomap.js"></script>
-        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
         <title> Corona Dashboard </title>
     </head>
 
@@ -160,6 +163,18 @@
                             redrawBarChart();
                             updateXAxisTitleBarChart();
                         });
+
+                        $(".switch").click(function () {
+                            if ($("#tp1").text() == "Activar todas") {
+                                $("#tp1").text("Remove comment");
+                            } else {
+                                $("#tp1").text("Activar todas");
+                            }
+                        });
+
+
+
+
                     </script>
                 </div>
 
