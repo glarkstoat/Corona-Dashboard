@@ -230,7 +230,7 @@
                             </div>
                         </div>
                         <div class="col-1">
-                            <button id="present-date-button" style="font-size : 80%;">Now</button>
+                            <button id="now-button" style="font-size : 80%;">Now</button>
                         </div>
                     </div>
                 </div>
@@ -493,7 +493,6 @@
                                 update_everything();
                             }
                             else { // Case where slider is at the end_date but the play button was clicked before 
-                                console.log("present-date");
                                 resetTimer();
                                 counter_dates = 0; // Resets the counter to 0 once, one full animation was completed
                             }  
@@ -520,9 +519,9 @@
 
                     // By clicking this button it makes it easier to jump back to the present date. 
                     // Very difficult to do that by just moving the slider with the mouse.
-                    var presentDateButton = d3.select("#present-date-button");
+                    var nowButton = d3.select("#now-button");
 
-                    presentDateButton.on("click", function () {
+                    nowButton.on("click", function () {
                         if (global_date == formatDate(end_date)) {
                             // no action required since the slider is set to the present date already
                         }
@@ -1117,32 +1116,42 @@
                         <div class="col">
                             <label for="features">Choose x-axis feature:</label>
                             <select class="form-control" id="scatter-select-xfeature">
-                                <option value='total_cases_per_million'> Total Cases per million </option>
-                                <option value='total_cases'> Total Cases </option>
-                                <option value='new_cases_smoothed'> New Cases </option>
-                                <option value='new_cases_smoothed_per_million'> New Cases per million </option>
-                                <option value="total_deaths"> Total Deaths </option>
-                                <option value="total_deaths_per_million"> Total Deaths per million </option>
-                                <option value="new_deaths_smoothed"> New Deaths </option>
-                                <option value="new_deaths_smoothed_per_million"> New Deaths per Million </option>       
-                                <option value="reproduction_rate"> Reproduction Rate </option>
-
-                                <option value="percentage_of_people_vaccinated">Percentage Of People vaccinated </option>
-                                <option value="percentage_of_people_fully_vaccinated">Percentage Of People fully vaccinated</option>
-                                <option value="new_vaccinations_smoothed_per_million"> New vaccinations per million </option>
+                                <optgroup label="Corona-related Statistics">
+                                    <option value='total_cases'> Total Cases </option>
+                                    <option value='total_cases_per_million'> Total Cases per Million </option>
+                                    <option value='new_cases_smoothed'> New Cases </option>
+                                    
+                                    <option value='new_cases_smoothed_per_million'> New Cases per Million </option>
+                                    <option value="total_deaths"> Total Deaths </option>
+                                    <option value="total_deaths_per_million"> Total Deaths per Million </option>
+                                    <option value="new_deaths_smoothed"> New Deaths </option>
+                                    <option value="new_deaths_smoothed_per_million"> New Deaths per Million </option>
+                                    
+                                    <option value="reproduction_rate"> Reproduction Rate </option>
+                                    <option value="new_vaccinations_smoothed_per_million"> New vaccinations per Million </option>
+                                    
+                                    <option value="percentage_of_people_vaccinated">Percentage of People vaccinated </option>
+                                    <option value="percentage_of_people_fully_vaccinated">Percentage of People fully vaccinated</option>
+                                    <option value="stringency_index"> Stringency Index </option>
+                                
+                                    <option value="new_tests_smoothed_per_thousand"> New Tests per Thousand</option>  </option>
+                                    <option value="new_people_vaccinated_smoothed_per_hundred"> New People Vaccinated per Hundred </option>
+                                    <option value="total_boosters_per_hundred"> Total Boosters per Hundred </option>                        
+                                </optgroup>
         
-                                <option value="stringency_index"> Stringency Index </option>
-                                <option value="life_expectancy"> Life Expectancy </option> 
-                                <option value="gdp_per_capita"> Gdp per Capita </option>
-                                <option value="human_development_index"> Human Development Index </option>
-                                <option value="hospital_beds_per_thousand"> Hospital beds per Thousand </option>
-                                <option value="male_smokers"> Male smokers (Share of male population) </option>
-                                <option value="female_smokers"> Female Smokers (Share of female population) </option>
-                                <option value="diabetes_prevalence"> Diabetes Prevalence </option>
-                                <option value="cardiovasc_death_rate"> Cardiovasc Death Rate </option>
-                                <option value="extreme_poverty"> Extreme Poverty </option>
-                                <option value="median_age"> Median Age </option>
-                                <option value="population"> Population </option>
+                                <optgroup label="General Information">
+                                    <option value="life_expectancy"> Life Expectancy </option> 
+                                    <option value="gdp_per_capita"> Gdp per Capita </option>
+                                    <option value="human_development_index"> Human Development Index </option>
+                                    <option value="hospital_beds_per_thousand"> Hospital beds per Thousand </option>
+                                    
+                                    <option value="male_smokers"> Male smokers (Share of male population) </option>
+                                    <option value="female_smokers"> Female Smokers (Share of female population) </option>
+                                    <option value="diabetes_prevalence"> Diabetes Prevalence </option>
+                                    <option value="cardiovasc_death_rate"> Cardiovasc Death Rate </option>
+                                    <option value="extreme_poverty"> Extreme Poverty </option>
+                                    <option value="median_age"> Median Age </option>
+                                </optgroup>
                             </select>
                         </div>
 
@@ -1150,32 +1159,42 @@
                             <div class="row">
                                 <label for="features">Choose y-axis feature:</label>
                                 <select class="form-control" id="scatter-select-yfeature">
-                                    <option value="total_deaths_per_million"> Total Deaths per million </option>
-                                    <option value='total_cases_per_million'> Total Cases per million </option>
-                                    <option value='total_cases'> Total Cases </option>
-                                    <option value='new_cases_smoothed'> New Cases </option>
-                                    <option value='new_cases_smoothed_per_million'> New Cases per million </option>
-                                    <option value="total_deaths"> Total Deaths </option>
-                                    <option value="new_deaths_smoothed"> New Deaths </option>
-                                    <option value="new_deaths_smoothed_per_million"> New Deaths per Million </option>       
-                                    <option value="reproduction_rate"> Reproduction Rate </option>
-
-                                    <option value="percentage_of_people_vaccinated">Percentage Of People vaccinated </option>
-                                    <option value="percentage_of_people_fully_vaccinated">Percentage Of People fully vaccinated</option>
-                                    <option value="new_vaccinations_smoothed_per_million"> New vaccinations per million </option>
+                                    <optgroup label="Corona-related Statistics">
+                                        <option value='total_cases'> Total Cases </option>
+                                        <option value='total_cases_per_million'> Total Cases per Million </option>
+                                        <option value='new_cases_smoothed'> New Cases </option>
+                                        
+                                        <option value='new_cases_smoothed_per_million'> New Cases per Million </option>
+                                        <option value="total_deaths"> Total Deaths </option>
+                                        <option value="total_deaths_per_million"> Total Deaths per Million </option>
+                                        <option value="new_deaths_smoothed"> New Deaths </option>
+                                        <option value="new_deaths_smoothed_per_million"> New Deaths per Million </option>
+                                        
+                                        <option value="reproduction_rate"> Reproduction Rate </option>
+                                        <option value="new_vaccinations_smoothed_per_million"> New vaccinations per Million </option>
+                                        
+                                        <option value="percentage_of_people_vaccinated">Percentage of People vaccinated </option>
+                                        <option value="percentage_of_people_fully_vaccinated">Percentage of People fully vaccinated</option>
+                                        <option value="stringency_index"> Stringency Index </option>
+                                    
+                                        <option value="new_tests_smoothed_per_thousand"> New Tests per Thousand</option>  </option>
+                                        <option value="new_people_vaccinated_smoothed_per_hundred"> New People Vaccinated per Hundred </option>
+                                        <option value="total_boosters_per_hundred"> Total Boosters per Hundred </option>                        
+                                    </optgroup>
             
-                                    <option value="stringency_index"> Stringency Index </option>
-                                    <option value="life_expectancy"> Life Expectancy </option> 
-                                    <option value="gdp_per_capita"> Gdp per Capita </option>
-                                    <option value="human_development_index"> Human Development Index </option>
-                                    <option value="hospital_beds_per_thousand"> Hospital beds per Thousand </option>
-                                    <option value="male_smokers"> Male smokers (Share of male population) </option>
-                                    <option value="female_smokers"> Female Smokers (Share of female population) </option>
-                                    <option value="diabetes_prevalence"> Diabetes Prevalence </option>
-                                    <option value="cardiovasc_death_rate"> Cardiovasc Death Rate </option>
-                                    <option value="extreme_poverty"> Extreme Poverty </option>
-                                    <option value="median_age"> Median Age </option>
-                                    <option value="population"> Population </option>
+                                    <optgroup label="General Information">
+                                        <option value="life_expectancy"> Life Expectancy </option> 
+                                        <option value="gdp_per_capita"> Gdp per Capita </option>
+                                        <option value="human_development_index"> Human Development Index </option>
+                                        <option value="hospital_beds_per_thousand"> Hospital beds per Thousand </option>
+                                        
+                                        <option value="male_smokers"> Male smokers (Share of male population) </option>
+                                        <option value="female_smokers"> Female Smokers (Share of female population) </option>
+                                        <option value="diabetes_prevalence"> Diabetes Prevalence </option>
+                                        <option value="cardiovasc_death_rate"> Cardiovasc Death Rate </option>
+                                        <option value="extreme_poverty"> Extreme Poverty </option>
+                                        <option value="median_age"> Median Age </option>
+                                    </optgroup>
                                 </select>
                             </div>
                         </div>
@@ -1433,7 +1452,21 @@
 
                 </script>
 
-                <div id="time_slider_scatter"></div>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-1">
+                            <button id="play-button-scatter" style="font-size : 80%;">Play</button>
+                        </div>
+                        <div class="col-10">
+                            <div class="row">
+                                <div id="time_slider_scatter"></div>
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <button id="now-button-scatter" style="font-size : 80%;">Now</button>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Time slider for the scatter plot -->
                 <script>
@@ -1525,6 +1558,80 @@
                         
                     },3000);  // timeout for loading of data_full
 
+                    counter_dates_scatter = 0;
+
+                    var update_scatter = function(){ // Is called iteratively
+
+                        if (global_date_scatter < formatDate(end_date)) { // Either at the start of the slider or in between the start and the end
+                            global_date_scatter = dates[++counter_dates_scatter];
+
+                            drawScatterPlot();
+                            handle_scatter.attr("cx", x_slider_scatter(new Date(global_date_scatter)));
+                            showName_scatter(formatDate_slider(new Date(global_date_scatter)));
+
+                            d3.select("#scatter")
+                                        .select("#mouse-over-label")
+                                        .remove();
+                        }
+                        else if (global_date_scatter == formatDate(end_date)) {
+                            if (counter_dates_scatter <= 0) { // Inital case where nothing happended yet (play button was not clicked yet) and slider is on end_date by default
+                                global_date_scatter = dates[counter_dates_scatter]; // resets global_date to start_date
+
+                                drawScatterPlot();
+                                handle_scatter.attr("cx", x_slider_scatter(new Date(global_date_scatter)));
+                                showName_scatter(formatDate_slider(new Date(global_date_scatter)));
+
+                                d3.select("#scatter")
+                                        .select("#mouse-over-label")
+                                        .remove();
+                            }
+                            else { // Case where slider is at the end_date but the play button was clicked before 
+                                resetTimer_scatter();
+                                counter_dates_scatter = 0; // Resets the counter to 0 once, one full animation was completed
+                            }  
+                        }
+                        };
+
+                        function resetTimer_scatter() {
+                        clearInterval(timer_scatter);
+                        playButton_scatter.text("Play");
+                        }
+
+                        // By clicking the button it shows the time evolution of all charts 
+                        var playButton_scatter = d3.select("#play-button-scatter");
+
+                        playButton_scatter.on("click", function () {
+                        if (playButton_scatter.text() == "Pause") {
+                            resetTimer_scatter(); // interrupt loop
+                        } 
+                        else if (playButton_scatter.text() == "Play" ) {
+                            timer_scatter = setInterval(update_scatter, 50);
+                            playButton_scatter.text("Pause");
+                        }
+                        });
+
+                        // By clicking this button it makes it easier to jump back to the present date. 
+                        // Very difficult to do that by just moving the slider with the mouse.
+                        var nowButton_scatter = d3.select("#now-button-scatter");
+
+                        nowButton_scatter.on("click", function () {
+                        if (global_date_scatter == formatDate(end_date)) {
+                            // no action required since the slider is set to the present date already
+                        }
+                        else { // slider was moved to a different position
+
+                            // Set slider back to the present date and update all charts
+                            global_date_scatter = formatDate(end_date);
+                            
+                            drawScatterPlot();
+                            handle_scatter.attr("cx", x_slider_scatter(new Date(global_date_scatter)));
+                            showName_scatter(formatDate_slider(new Date(global_date_scatter)));
+
+                            // Simulate the initial case where the play button was not yet clicked for correct behaviour
+                            resetTimer_scatter();
+                            counter_dates_scatter = 0;
+                        }
+                        });
                 </script>
 
                 <div>

@@ -114,7 +114,7 @@ h1 {
   transition-duration: 0.4s;
 }
 
-#present-date-button {
+#now-button {
   background: #0b530294;
   padding-right: 0;
   border-radius: 0px;
@@ -134,7 +134,47 @@ h1 {
   background-color: #0b5302ec;
 }
 
-#present-date-button:hover {
+#now-button:hover {
+  background-color: #0b5302ec;
+}
+
+#play-button-scatter {
+  background: #0b530294;
+  padding-right: 0;
+  border-radius: 0px;
+  border: none;
+  color: white;
+  margin: 0px;
+  margin-left: 0%;
+  margin-top: 50%;
+  padding: 0 0;
+  width: 80%;
+  cursor: pointer;
+  height: 30%;
+  transition-duration: 0.4s;
+}
+
+#now-button-scatter {
+  background: #0b530294;
+  padding-right: 0;
+  border-radius: 0px;
+  border: none;
+  color: white;
+  margin: 0px;
+  margin-left: 0%;
+  margin-top: 50%;
+  padding: 0 0;
+  width: 80%;
+  cursor: pointer;
+  height: 30%;
+  transition-duration: 0.4s;
+}
+
+#play-button-scatter:hover {
+  background-color: #0b5302ec;
+}
+
+#now-button-scatter:hover {
   background-color: #0b5302ec;
 }
 
