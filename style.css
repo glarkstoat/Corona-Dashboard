@@ -99,7 +99,7 @@ h1 {
 }
 
 #play-button {
-  background: #8584847e;
+  background: #0b530294;
   padding-right: 0;
   border-radius: 0px;
   border: none;
@@ -131,11 +131,11 @@ h1 {
 }
 
 #play-button:hover {
-  background-color: #858484f6;
+  background-color: #0b5302ec;
 }
 
 #present-date-button:hover {
-  background-color: #0b530294;
+  background-color: #0b5302ec;
 }
 
 .line {
