@@ -4,6 +4,7 @@
                 .) Include time slider for scatter plot
                 .) Trace for given country in scatter plot
                 .) By clicking on country in scatter plot it should get highlighted all the other countries should get low opacity 
+                .) Wrap everything inside the d3.csv function, to avoid the data loading problem
 -->
 
 <html>
@@ -1182,6 +1183,7 @@
                 </div>
 
                 <script>
+
                 // Upon change of second feature, scatter plot is redrawn
                 d3.select('#scatter-select-xfeature').on('change', function() {
                     scatter_xfeature = this.value;
@@ -1196,243 +1198,338 @@
                 <!-- Scatter plot to show correlation between two features -->
                 <div id="scatter" style="margin-left: 1em;"></div>
 
-                    <script>
-                        var margin_scatter = {top: 50, right: 70, bottom: screen.height / 15, left: screen.width / 20},
-                            width_scatter = screen.width / 2.2 - margin_scatter.left - margin_scatter.right,
-                            height_scatter = screen.height / 1.7 - margin_scatter.top - margin_scatter.bottom;
-                        
-                        var scatter = d3.select("#scatter")
-                                .append("svg")
-                                .attr("class", "scatter-plot")
-                                    .attr("width", width_scatter + margin_scatter.left + margin_scatter.right + screen.width / 10)
-                                    .attr("height", height_scatter + margin_scatter.top + margin_scatter.bottom)
-                                .append("g")
-                                    .attr("transform",
-                                        "translate(" + margin_scatter.left + "," + margin_scatter.top + ")")
+                <script>
+                    var margin_scatter = {top: 50, right: 70, bottom: screen.height / 15, left: screen.width / 20},
+                        width_scatter = screen.width / 2.2 - margin_scatter.left - margin_scatter.right,
+                        height_scatter = screen.height / 1.7 - margin_scatter.top - margin_scatter.bottom;
+                    
+                    var scatter = d3.select("#scatter")
+                            .append("svg")
+                            .attr("class", "scatter-plot")
+                                .attr("width", width_scatter + margin_scatter.left + margin_scatter.right + screen.width / 10)
+                                .attr("height", height_scatter + margin_scatter.top + margin_scatter.bottom)
+                            .append("g")
+                                .attr("transform",
+                                    "translate(" + margin_scatter.left + "," + margin_scatter.top + ")")
 
-                        var x_scatter = d3.scaleLog()
-                            .range([0, width_scatter]);
-                        var xAxis_scatter = d3.axisBottom(x_scatter).tickSize(-height_scatter).tickFormat(x => d3.format(".2s")(x)).ticks(3, "~s");
-                                                                        
-                        scatter.append("g")
-                            .attr("class", "x-axis-scatter")
-                            .attr("transform", "translate(0," + height_scatter + ")")
+                    var x_scatter = d3.scaleLog()
+                        .range([0, width_scatter]);
+                    var xAxis_scatter = d3.axisBottom(x_scatter).tickSize(-height_scatter).tickFormat(x => d3.format(".2s")(x)).ticks(3, "~s");
+                                                                    
+                    scatter.append("g")
+                        .attr("class", "x-axis-scatter")
+                        .attr("transform", "translate(0," + height_scatter + ")")
+                        .call(xAxis_scatter)
+                        .call(g => g.select(".domain").remove())
+                            .selectAll("text")
+                            .attr("font-size", screen.height / 110)
+                            .style("text-anchor", "end")
+                            .attr("dx", "-0.01em")
+                            .attr("dy", "1.35em")
+                            .attr("transform", "rotate(-35)");
+
+                    var x_feature_scatter = scatter.append("text")
+                            .attr("transform", "translate(" + (width_scatter/2) + "," + (height_scatter + screen.width / 30) + ")")
+                            .attr("font-size", screen.height / 70)
+                            .attr("font-weight", "bold")
+                            .style("text-anchor", "middle")
+                            .text(feature_names[scatter_xfeature]);
+                    
+                    var y_scatter = d3.scaleLog()
+                        .range([height_scatter, 0]);
+                    var yAxis_scatter = d3.axisLeft(y_scatter).tickSize(-width_scatter-margin_scatter.top+10).tickFormat(x => d3.format(".2s")(x)).ticks(3, "~s");
+
+                    scatter.append("g")
+                        .attr("class", "y-axis-scatter")
+                        .call(yAxis_scatter)
+                        .call(g => g.select(".domain").remove())
+                        .selectAll("text")
+                            .attr("font-size", screen.height / 110)
+                            .style("text-anchor", "end")
+                            .attr("dx", "-1.1em")
+                            .attr("dy", "-0.35em")
+                            .attr("transform", "rotate(-35)");
+
+                    var y_feature_scatter = scatter.append("text")
+                                    .attr("transform", "translate(" + -screen.width / 30 + "," + (height_scatter/2) + ")rotate(-90)")
+                                    .style("text-anchor", "middle")
+                                    .attr("font-size", screen.height / 70)
+                                    .attr("font-weight", "bold")
+                                    .text(feature_names[scatter_yfeature]);
+
+                    var legend_scatter = scatter.append("g")
+                            .attr("class", "legend-scatter")
+                            .attr("width", screen.width / 10)
+                            .attr("height", screen.height / 3)
+                            .attr("transform", "translate(" + (width_scatter + 110) + "," + (40) + ")");
+
+                    legend_scatter.append("rect")
+                            .attr('width', screen.width / 10)
+                            .attr('height', screen.height / 3)
+                            .style('fill', "#e0e0e0");
+                    
+                    const continents_colors = {"Asia":"rgb(201, 38, 8)", "Oceania":"rgb(201, 38, 8)", 
+                                            "South America":"rgb(46, 194, 29)", "North America":"rgb(46, 194, 29)", 
+                                            "Europe":"rgb(252, 177, 3)", "Africa":"rgb(18, 162, 224)"};
+                    cvs = Object.keys(continents_colors);
+                                            
+                    var legend_bubbles = legend_scatter.append("g")
+                                    .attr("width", screen.width / 100)
+                                    .attr("height", screen.height / 20)
+                                    .attr("transform", "translate(" + (5) + "," + screen.height / 60 + ")");
+                    
+                    var legend_continents = legend_scatter.append("g")
+                                    .attr("width", screen.width / 10)
+                                    .attr("height", screen.height / 3)
+                                    .attr("transform", "translate(" + (5) + "," + screen.height / 60 + ")");
+                    
+                    legend_scatter.append("text")
+                                .attr("font-size", screen.height / 90)
+                                .attr("font-weight", "Bold")
+                                .attr("x", 0)
+                                .attr("y", screen.height / 120)
+                                    .text("Continents");        
+
+                    legend_bubbles.selectAll("circle")
+                        .data(cvs)
+                        .enter().append("circle")
+                            .attr("cx", 5)
+                            .attr("cy", function(d, i) { return (i+screen.height/7000)*screen.height / 60; })
+                            .attr("r", screen.height / 300)
+                            .attr("fill", function(d, i) {
+                                    return continents_colors[d];
+                                        });
+                                
+                    legend_continents.selectAll("text")
+                            .data(cvs)
+                            .enter().append("text")
+                                .attr("font-size", screen.height / 100)
+                                .attr("font-weight", "Normal")
+                                .attr("x", 25)
+                                .attr("y", function(d, i) { return (i+screen.height/4000)*screen.height / 60; })
+                                .text(function(d) { return d; });
+
+                    legend_scatter.append("text")
+                                .attr("font-size", screen.height / 90)
+                                .attr("font-weight", "Bold")
+                                .attr("x", 0)
+                                .attr("y", screen.height / 8)
+                                    .text("Population");
+
+                    // Bubbles in the legend to showcase the size of the population
+                    const values_pop = [50000, 30000000, 100000000, 500000000, 1400000000];
+                    const values_pop_text = ["50k", "30 mill", "100 mill", "500 mill", "1.4 bill"]
+                    const y_values_pop = [screen.height / 7.5, screen.height / 5.3, screen.height / 4.5, screen.height / 4.2, screen.height / 4] 
+                    const x_values_pop_text = [screen.height / 30, screen.height / 40, screen.height / 60, screen.height / 90, screen.height / 120]
+
+                    // regulates size of scatter points
+                    var scale_population = d3.scaleSqrt()
+                                .domain([50000, 1400000000]) 
+                                .range([1, 30]);
+
+                    legend_bubbles.selectAll(".circle-pop")
+                        .data(values_pop.reverse())
+                        .enter().append("circle")
+                            .attr("cx", screen.width / 100)
+                            .attr("cy", function(d, i) { return y_values_pop[i] + screen.height / 80; })
+                            .attr("r", function(d) { return scale_population(d) * screen.width / 1800;})
+                            .attr("fill", "gray");
+
+                    legend_continents.selectAll(".text-bubbles")
+                            .data(values_pop_text.reverse())
+                            .enter().append("text")
+                                .attr("font-size", screen.height / 100)
+                                .attr("font-weight", "Normal")
+                                .attr("x", function(d, i) { return x_values_pop_text[i] + screen.width / 100; })
+                                .attr("y", function(d, i) { return y_values_pop[i] + screen.height / 60; })
+                                .text(function(d) { return d; });
+
+                    const updateXAxisTitleScatter = () => {
+                        x_feature_scatter.text(feature_names[scatter_xfeature])
+                    };
+
+                    const updateYAxisTitleScatter = () => {
+                        y_feature_scatter.text(feature_names[scatter_yfeature])
+                    };
+
+                    var reset_soft_scatter = () => {
+                                d3.select("#scatter").select("svg").selectAll(".circles-scatter")
+                                        .remove();
+                                d3.select("#scatter").select("svg").selectAll(".scatter-label")
+                                        .remove();
+                    };
+
+                    const drawScatterPlot = () => {
+
+                        // Delete old scatter points
+                        reset_soft_scatter();
+                        updateXAxisTitleScatter();
+                        updateYAxisTitleScatter();
+
+                        // Updates the plot with the data corresponding to the chosen date
+                        // only includes rows where both features are non-zero or non-NaN
+                        new_data = data_full.filter(row =>  (row.date === global_date_scatter) && 
+                                                            (+row[scatter_xfeature] > 0) && 
+                                                            (+row[scatter_yfeature] > 0));
+
+                        // Filter the two given features for the selected date
+                        var features = new_data.map(row => +row[scatter_xfeature]);
+                        var features2 = new_data.map(row => +row[scatter_yfeature]);
+
+                        // Redraw the x-axis
+                        x_scatter.domain(d3.extent(features));
+                        scatter.selectAll(".x-axis-scatter")    
                             .call(xAxis_scatter)
                             .call(g => g.select(".domain").remove())
                                 .selectAll("text")
                                 .attr("font-size", screen.height / 110)
                                 .style("text-anchor", "end")
-                                .attr("dx", "-0.01em")
-                                .attr("dy", "1.35em")
+                                .attr("dx", "-.8em")
+                                .attr("dy", ".15em")
                                 .attr("transform", "rotate(-35)");
 
-                        var x_feature_scatter = scatter.append("text")
-                                .attr("transform", "translate(" + (width_scatter/2) + "," + (height_scatter + screen.width / 30) + ")")
-                                .attr("font-size", screen.height / 70)
-                                .attr("font-weight", "bold")
-                                .style("text-anchor", "middle")
-                                .text(feature_names[scatter_xfeature]);
-                        
-                        var y_scatter = d3.scaleLog()
-                            .range([height_scatter, 0]);
-                        var yAxis_scatter = d3.axisLeft(y_scatter).tickSize(-width_scatter-margin_scatter.top+10).tickFormat(x => d3.format(".2s")(x)).ticks(3, "~s");
-
-                        scatter.append("g")
-                            .attr("class", "y-axis-scatter")
+                        // Redraw the y-axis
+                        y_scatter.domain(d3.extent(features2));
+                        scatter.selectAll(".y-axis-scatter")    
                             .call(yAxis_scatter)
                             .call(g => g.select(".domain").remove())
-                            .selectAll("text")
+                                .selectAll("text")
                                 .attr("font-size", screen.height / 110)
                                 .style("text-anchor", "end")
                                 .attr("dx", "-1.1em")
                                 .attr("dy", "-0.35em")
                                 .attr("transform", "rotate(-35)");
 
-                        var y_feature_scatter = scatter.append("text")
-                                        .attr("transform", "translate(" + -screen.width / 30 + "," + (height_scatter/2) + ")rotate(-90)")
-                                        .style("text-anchor", "middle")
-                                        .attr("font-size", screen.height / 70)
-                                        .attr("font-weight", "bold")
-                                        .text(feature_names[scatter_yfeature]);
+                        // Draw the circles
+                        scatter.append('g')
+                            .selectAll("dot")
+                            .data(new_data).enter()
+                            .append("circle")
+                                .attr("class", "circles-scatter")
+                                .attr("cx", function (d) { return x_scatter(d[scatter_xfeature]); })
+                                .attr("cy", function (d) { return y_scatter(d[scatter_yfeature]); })
+                                .attr("r", function (d)  { return scale_population(+d["population"]) * screen.width / 1800; })
+                                .style("fill", function (d) { return continents_colors[d["continent"]]; })
+                                .on("mouseover", function(d) {
 
-                        var legend_scatter = scatter.append("g")
-                                .attr("class", "legend-scatter")
-                                .attr("width", screen.width / 10)
-                                .attr("height", screen.height / 3)
-                                .attr("transform", "translate(" + (width_scatter + 110) + "," + (40) + ")");
+                                    scatter.append("text")
+                                            .attr("id", "mouse-over-label")
+                                            .attr("x", function() { return x_scatter(d[scatter_xfeature]) + scale_population(+d["population"]) + screen.width / 400 ;})
+                                            .attr("y", function() { return y_scatter(d[scatter_yfeature]) - screen.width / 400 ;})
+                                            .attr("font-size", screen.height / 90)
+                                            .text(d["location"])
 
-                        legend_scatter.append("rect")
-                                .attr('width', screen.width / 10)
-                                .attr('height', screen.height / 3)
-                                .style('fill', "#e0e0e0");
+                                })
+                                .on("mouseout", function() {
+                                    d3.select("#scatter")
+                                        .select("#mouse-over-label")
+                                        .remove();
+                                })
+                    };
+                    setTimeout(function(){ // needed so that end_date can be accessed      
+                        global_date_scatter = global_date;
+                        drawScatterPlot();
+                    },3000); 
+
+                </script>
+
+                <div id="time_slider_scatter"></div>
+
+                <!-- Time slider for the scatter plot -->
+                <script>
+
+                    var margin_slider_scatter = {right: screen.width / 20, left: 0, top: 0, bottom: 0},
+                        width_slider_scatter = screen.width / 3,
+                        height_slider_scatter = screen.height / 15;
+                    
+                    var svg = d3.select("#time_slider_scatter").append("svg")
+                                .attr("width", width_slider_scatter + margin_slider_scatter.left + margin_slider_scatter.right)
+                                .attr("height", height_slider_scatter + margin_slider_scatter.top + margin_slider_scatter.bottom)
+                                .append("g")
+                                .attr("transform", "translate(" + margin_slider_scatter.left + "," + margin_slider_scatter.top + ")");
+
+                    var slider_scatter = svg.append("g")
+                        .attr("class", "slider")
+                        .attr("transform", "translate(" + (screen.width / 70) + "," + (height_slider / 2) + ")");
+    
+                    // Contains the selected date
+                    var nameContainer_scatter = slider_scatter.append("text")
+                        .attr("transform", "translate(" + (width_slider_scatter/2 - screen.width / 20)  + "," + -20 +")")
+                        .attr("font-size", "" + screen.height / 70 + "px");
+    
+                    // Shows selected date above the slider
+                    const showName_scatter = text => nameContainer_scatter.text("Selected Date: " + text);
+
+                    var x_slider_scatter = d3.scaleTime()
+                            .range([0, width_slider_scatter])
+                            .clamp(true);
+
+                    slider_scatter.append("line")
+                            .attr("class", "track")
+                            .attr("x1", x_slider_scatter.range()[0])
+                            .attr("x2", x_slider_scatter.range()[1])
+                            .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+                            .attr("class", "track-inset")
+                            .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+                            .attr("class", "track-overlay")
+                            .call(d3.drag()
+                                .on("drag", function() { updateScatterAndSlider(d3.mouse(this)[0]); })
+                                .on("end", function() { updateScatterAndSlider(d3.mouse(this)[0]); })); 
+
+                    var handle_scatter = slider_scatter.insert("circle", ".track-overlay")
+                            .attr("class", "handle")
+                            .attr("r", screen.height / 120);
+
+                    // Sets the initial position of the handle to the most recent date
+                    handle_scatter.attr("cx", width_slider_scatter);
+
+                    // Regulats what happens if slider is moved
+                    const updateScatterAndSlider = mouse => {
+                        // if ... else so that slider handle doesn't go beyond the edges of the track overlay
+                        if (mouse > width_slider_scatter) { handle_scatter.attr("cx", width_slider_scatter); }
+                        else if (mouse < 0) { handle_scatter.attr("cx", 0); }
+                        else { handle_scatter.attr("cx", mouse);
+
+                        // Gets the selected date based on the slider position
+                        selected_date_scatter = x_slider_scatter.invert(mouse);
+                        global_date_scatter = formatDate(selected_date_scatter);
+
+                        // Set the counter_dates to the index of the global_date in dates
+                        counter_dates_scatter = dates.indexOf(global_date_scatter);
+
+                        // Shows the selected date in the name container above the slider track
+                        showName_scatter(formatDate_slider(selected_date_scatter));
                         
-                        const continents_colors = {"Asia":"rgb(201, 38, 8)", "Oceania":"rgb(201, 38, 8)", 
-                                                "South America":"rgb(46, 194, 29)", "North America":"rgb(46, 194, 29)", 
-                                                "Europe":"rgb(252, 177, 3)", "Africa":"rgb(18, 162, 224)"};
-                        cvs = Object.keys(continents_colors);
-                                                
-                        var legend_bubbles = legend_scatter.append("g")
-                                        .attr("width", screen.width / 100)
-                                        .attr("height", screen.height / 20)
-                                        .attr("transform", "translate(" + (5) + "," + screen.height / 60 + ")");
+                        // Redraw the new scatter plot
+                        drawScatterPlot();
+
+                    }
+                    };
+
+                    setTimeout(function() { // needed so that data_full can be accessed
+
+                        x_slider_scatter.domain([start_date, end_date]);
+                        showName_scatter(formatDate_slider(end_date)); // Shows the initial date
+                                
+                        // Time ticks of slider
+                        slider_scatter.insert("g", ".track-overlay")
+                            .attr("class", "ticks")
+                            .attr("transform", "translate(0," + 25 + ")")
+                            .selectAll("text")
+                            .data(x_slider_scatter.ticks(7))
+                            .enter().append("text")
+                                .attr("font-size", screen.height / 90)
+                                .attr("x", x_slider_scatter)
+                                .attr("text-anchor", "middle")
+                                .text(function(d) { return formatDate_slider(d); });
                         
-                        var legend_continents = legend_scatter.append("g")
-                                        .attr("width", screen.width / 10)
-                                        .attr("height", screen.height / 3)
-                                        .attr("transform", "translate(" + (5) + "," + screen.height / 60 + ")");
-                        
-                        legend_scatter.append("text")
-                                    .attr("font-size", screen.height / 90)
-                                    .attr("font-weight", "Bold")
-                                    .attr("x", 0)
-                                    .attr("y", screen.height / 120)
-                                        .text("Continents");        
+                    },3000);  // timeout for loading of data_full
 
-                        legend_bubbles.selectAll("circle")
-                            .data(cvs)
-                            .enter().append("circle")
-                                .attr("cx", 5)
-                                .attr("cy", function(d, i) { return (i+screen.height/7000)*screen.height / 60; })
-                                .attr("r", screen.height / 300)
-                                .attr("fill", function(d, i) {
-                                        return continents_colors[d];
-                                            });
-                                    
-                        legend_continents.selectAll("text")
-                                .data(cvs)
-                                .enter().append("text")
-                                    .attr("font-size", screen.height / 100)
-                                    .attr("font-weight", "Normal")
-                                    .attr("x", 25)
-                                    .attr("y", function(d, i) { return (i+screen.height/4000)*screen.height / 60; })
-                                    .text(function(d) { return d; });
+                </script>
 
-                        legend_scatter.append("text")
-                                    .attr("font-size", screen.height / 90)
-                                    .attr("font-weight", "Bold")
-                                    .attr("x", 0)
-                                    .attr("y", screen.height / 8)
-                                        .text("Population");
-
-                        // Bubbles in the legend to showcase the size of the population
-                        const values_pop = [50000, 30000000, 100000000, 500000000, 1400000000];
-                        const values_pop_text = ["50k", "30 mill", "100 mill", "500 mill", "1.4 bill"]
-                        const y_values_pop = [screen.height / 7.5, screen.height / 5.3, screen.height / 4.5, screen.height / 4.2, screen.height / 4] 
-                        const x_values_pop_text = [screen.height / 30, screen.height / 40, screen.height / 60, screen.height / 90, screen.height / 120]
-
-                        // regulates size of scatter points
-                        var scale_population = d3.scaleSqrt()
-                                    .domain([50000, 1400000000]) 
-                                    .range([1, 30]);
-
-                        legend_bubbles.selectAll(".circle-pop")
-                            .data(values_pop.reverse())
-                            .enter().append("circle")
-                                .attr("cx", screen.width / 100)
-                                .attr("cy", function(d, i) { return y_values_pop[i] + screen.height / 80; })
-                                .attr("r", function(d) { return scale_population(d) * screen.width / 1800;})
-                                .attr("fill", "gray");
-
-                        legend_continents.selectAll(".text-bubbles")
-                                .data(values_pop_text.reverse())
-                                .enter().append("text")
-                                    .attr("font-size", screen.height / 100)
-                                    .attr("font-weight", "Normal")
-                                    .attr("x", function(d, i) { return x_values_pop_text[i] + screen.width / 100; })
-                                    .attr("y", function(d, i) { return y_values_pop[i] + screen.height / 60; })
-                                    .text(function(d) { return d; });
-
-                        const updateXAxisTitleScatter = () => {
-                            x_feature_scatter.text(feature_names[scatter_xfeature])
-                        };
-
-                        const updateYAxisTitleScatter = () => {
-                            y_feature_scatter.text(feature_names[scatter_yfeature])
-                        };
-
-                        var reset_soft_scatter = () => {
-                                    d3.select("#scatter").select("svg").selectAll(".circles-scatter")
-                                            .remove();
-                                    d3.select("#scatter").select("svg").selectAll(".scatter-label")
-                                            .remove();
-                        };
-
-                        const drawScatterPlot = () => {
-
-                            // Delete old scatter points
-                            reset_soft_scatter();
-                            updateXAxisTitleScatter();
-                            updateYAxisTitleScatter();
-
-                            // Updates the plot with the data corresponding to the chosen date
-                            // only includes rows where both features are non-zero or non-NaN
-                            new_data = data_full.filter(row =>  (row.date === global_date) && 
-                                                                (+row[scatter_xfeature] > 0) && 
-                                                                (+row[scatter_yfeature] > 0));
-
-                            // Filter the two given features for the selected date
-                            var features = new_data.map(row => +row[scatter_xfeature]);
-                            var features2 = new_data.map(row => +row[scatter_yfeature]);
-
-                            // Redraw the x-axis
-                            x_scatter.domain(d3.extent(features));
-                            scatter.selectAll(".x-axis-scatter")    
-                                .call(xAxis_scatter)
-                                .call(g => g.select(".domain").remove())
-                                    .selectAll("text")
-                                    .attr("font-size", screen.height / 110)
-                                    .style("text-anchor", "end")
-                                    .attr("dx", "-.8em")
-                                    .attr("dy", ".15em")
-                                    .attr("transform", "rotate(-35)");
-
-                            // Redraw the y-axis
-                            y_scatter.domain(d3.extent(features2));
-                            scatter.selectAll(".y-axis-scatter")    
-                                .call(yAxis_scatter)
-                                .call(g => g.select(".domain").remove())
-                                    .selectAll("text")
-                                    .attr("font-size", screen.height / 110)
-                                    .style("text-anchor", "end")
-                                    .attr("dx", "-1.1em")
-                                    .attr("dy", "-0.35em")
-                                    .attr("transform", "rotate(-35)");
-
-                            // Draw the circles
-                            scatter.append('g')
-                                .selectAll("dot")
-                                .data(new_data).enter()
-                                .append("circle")
-                                    .attr("class", "circles-scatter")
-                                    .attr("cx", function (d) { return x_scatter(d[scatter_xfeature]); })
-                                    .attr("cy", function (d) { return y_scatter(d[scatter_yfeature]); })
-                                    .attr("r", function (d)  { return scale_population(+d["population"]) * screen.width / 1800; })
-                                    .style("fill", function (d) { return continents_colors[d["continent"]]; })
-                                    .on("mouseover", function(d) {
-
-                                        scatter.append("text")
-                                                .attr("id", "mouse-over-label")
-                                                .attr("x", function() { return x_scatter(d[scatter_xfeature]) + scale_population(+d["population"]) + screen.width / 400 ;})
-                                                .attr("y", function() { return y_scatter(d[scatter_yfeature]) - screen.width / 400 ;})
-                                                .attr("font-size", screen.height / 90)
-                                                .text(d["location"])
-
-                                    })
-                                    .on("mouseout", function() {
-                                        d3.select("#scatter")
-                                            .select("#mouse-over-label")
-                                            .remove();
-                                    })
-                        };
-                        setTimeout(function(){ // needed so that end_date can be accessed      
-                            drawScatterPlot();
-                        },3000); 
-
-                    </script>
-
-                    <div>
-                        <button onclick="reset_soft_scatter()">Reset</button>
-                    </div>
+                <div>
+                    <button onclick="reset_soft_scatter()">Reset</button>
+                </div>
             </div>
         </div>            
     </body>
