@@ -1,10 +1,9 @@
 <!--
                 TODOS:
                 .) Tooltips under/beneath the charts to explain how to use them (look at jQuery)
-                .) Include time slider for scatter plot
                 .) Trace for given country in scatter plot
                 .) By clicking on country in scatter plot it should get highlighted all the other countries should get low opacity 
-                .) Wrap everything inside the d3.csv function, to avoid the data loading problem
+                .) Log-axis of scatter plot shows strange values like 800m although value is very small
 -->
 
 <html>
@@ -1117,8 +1116,8 @@
                             <label for="features">Choose x-axis feature:</label>
                             <select class="form-control" id="scatter-select-xfeature">
                                 <optgroup label="Corona-related Statistics">
-                                    <option value='total_cases'> Total Cases </option>
                                     <option value='total_cases_per_million'> Total Cases per Million </option>
+                                    <option value='total_cases'> Total Cases </option>
                                     <option value='new_cases_smoothed'> New Cases </option>
                                     
                                     <option value='new_cases_smoothed_per_million'> New Cases per Million </option>
@@ -1160,13 +1159,13 @@
                                 <label for="features">Choose y-axis feature:</label>
                                 <select class="form-control" id="scatter-select-yfeature">
                                     <optgroup label="Corona-related Statistics">
+                                        <option value="total_deaths_per_million"> Total Deaths per Million </option>
                                         <option value='total_cases'> Total Cases </option>
                                         <option value='total_cases_per_million'> Total Cases per Million </option>
                                         <option value='new_cases_smoothed'> New Cases </option>
                                         
                                         <option value='new_cases_smoothed_per_million'> New Cases per Million </option>
                                         <option value="total_deaths"> Total Deaths </option>
-                                        <option value="total_deaths_per_million"> Total Deaths per Million </option>
                                         <option value="new_deaths_smoothed"> New Deaths </option>
                                         <option value="new_deaths_smoothed_per_million"> New Deaths per Million </option>
                                         
@@ -1605,7 +1604,7 @@
                             resetTimer_scatter(); // interrupt loop
                         } 
                         else if (playButton_scatter.text() == "Play" ) {
-                            timer_scatter = setInterval(update_scatter, 50);
+                            timer_scatter = setInterval(update_scatter, 100);
                             playButton_scatter.text("Pause");
                         }
                         });
