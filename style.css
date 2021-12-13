@@ -12,6 +12,7 @@ label {
   width: 100%;
   padding-right: 15px;
   padding-left: 15px;
+  max-width: 1140px;
   /*margin-right: auto;
   margin-left: auto; */ 
 }
@@ -40,11 +41,15 @@ select option{
   column-gap: 0%;
   row-gap: 0px;
   background-color: rgba(212, 212, 212, 0.698);
+  width: 100%;
+  max-width: 2543px;
 }
 
 .wrapper-div {
   height: 100%;
   width: 100%;
+  max-width: 1475px;
+  max-height: 1184px;
   /*background-color: powderblue;*/
 }
 

@@ -364,7 +364,7 @@ function (_Geomap) {
           hLegend = hBox - hBox / (hFactor * 1.9),
           offsetText = wRect / 2,
           offsetY = self.properties.height - hBox,
-          tr = 'translate(' + 5 + offsetText + ',' + (offsetText - screen.height / 10) + ')'; // Remove possibly existing legend, before drawing.
+          tr = 'translate(' + 5 + ((offsetText > 9) ? 9 : offsetText) + ',' + (offsetText - ((screen.height / 10 > 144) ? 144 : screen.height / 10)) + ')'; // Remove possibly existing legend, before drawing.
 
       self.svg.select('g.legend').remove(); // Reverse a copy to not alter colors array.
 

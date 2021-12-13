@@ -173,9 +173,6 @@
                             }
                         });
 
-
-
-
                     </script>
                 </div>
 
@@ -185,14 +182,15 @@
                         var map = d3.choropleth()
                                 .geofile('topojson/world/countries.json')
                                 .column('total_cases')
-                                .scale(screen.width / 9)
-                                .height(screen.height / 1.6)
-                                .width(screen.width / 1.7)
+                                .scale((screen.width / 9 > 285) ? 285 : screen.width / 9)
+                                .height((screen.height / 1.6 > 900) ? 900 : screen.height / 1.6)
+                                .width((screen.width / 1.7 > 1506) ? 1506 : screen.width / 1.7)
                                 .format(d3.format(".5s"))
                                 .legend(true)
                                 .zoomFactor(1)
                                 .unitId('iso3');
         
+                        console.log(screen.height / 1.6);
                         // Global variable containing the csv-data
                         var data_full = [];
                         var dates = [];
@@ -239,8 +237,8 @@
                 <script>
 
                     var margin_slider = {right: screen.width / 20, left: 0, top: 0, bottom: 0},
-                        width_slider = screen.width / 3,
-                        height_slider = screen.height / 15;
+                        width_slider = (screen.width / 3 > 854) ? 854 : screen.width / 3,
+                        height_slider = (screen.height / 15 > 96) ? 96 : screen.height / 15;
                     
                     var svg = d3.select("#time_slider").append("svg")
                                 .attr("width", width_slider + margin_slider.left + margin_slider.right)
