@@ -2,11 +2,13 @@
 # %%
 import requests
 import pandas as pd
+import os
 import pywintypes
 from win10toast import ToastNotifier
 
 toast = ToastNotifier()
 toast.show_toast("Covid Data Update", "The update has been started", duration=30)
+os.chdir(r"C:\Users\chris\Documents\GitHub\Corona-Dashboard\data")
 
 # Downloads the latest version of the data set
 csv_url = "https://covid.ourworldindata.org/data/owid-covid-data.csv"
@@ -42,5 +44,5 @@ df = df.drop(columns=["new_cases_per_million", "new_cases", "new_deaths",
 
 df.to_csv('data_covid.csv', index=False)
 
-print("Task completed successfully.")
+toast.show_toast("Covid Data Update Completed", "The update has been completed", duration=30)
 # %%
