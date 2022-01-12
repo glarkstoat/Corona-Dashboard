@@ -2,6 +2,11 @@
 # %%
 import requests
 import pandas as pd
+import pywintypes
+from win10toast import ToastNotifier
+
+toast = ToastNotifier()
+toast.show_toast("Covid Data Update", "The update has been started", duration=30)
 
 # Downloads the latest version of the data set
 csv_url = "https://covid.ourworldindata.org/data/owid-covid-data.csv"
