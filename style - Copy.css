@@ -1,0 +1,258 @@
+body {
+  background-color: rgba(212, 212, 212, 0.698);
+  position: relative;
+  font-size: 1.7rem;
+  max-width: 2543px;
+}
+
+label {
+  font-weight: bold
+}
+
+.container {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  max-width: 1140px;
+  /*margin-right: auto;
+  margin-left: auto; */ 
+}
+
+.row {
+  display: -ms-flexbox;
+  display: flex;
+  /* flex-wrap: wrap; */
+  /* margin-right: -15px; */
+  /* margin-left: -15px; */
+}
+
+.pull-right{
+  width: 30%;
+  margin-top: 2%;
+  margin-left: 10%;
+}
+
+select option{
+  font-size: 100%;
+}
+
+.wrapper {
+  display: grid;
+  grid-template-columns: 58% 42%;
+  column-gap: 0%;
+  row-gap: 0px;
+  background-color: rgba(212, 212, 212, 0.698);
+  width: 100%;
+  max-width: 2543px;
+}
+
+.wrapper-div {
+  height: 100%;
+  width: 100%;
+  max-width: 1475px;
+  max-height: 1184px;
+  /*background-color: powderblue;*/
+}
+
+h1 {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  display: block;
+  background-color: rgba(212, 212, 212, 0.698);
+}
+
+.ticks {
+  font: 17px sans-serif;
+}
+
+.tick line {
+  stroke: rgb(255, 255, 255);
+  opacity: 0.3;
+  stroke-width: 1.5;
+}
+
+.track,
+.track-inset,
+.track-overlay {
+  stroke-linecap: round;
+}
+
+.track {
+  stroke: #000;
+  stroke-opacity: 0.3;
+  stroke-width: 2%;
+}
+
+.track-inset {
+  stroke: rgba(255, 255, 255, 0.876);
+  stroke-width: 2%;
+}
+
+.track-overlay {
+  pointer-events: stroke;
+  stroke-width: 10%;
+  stroke: transparent;
+  cursor: crosshair;
+}
+
+.handle {
+  fill: #fff;
+  stroke: #000;
+  stroke-opacity: 0.3;
+  stroke-width: 1.5px;
+}
+
+#play-button {
+  background: #0b530294;
+  padding-right: 0;
+  border-radius: 0px;
+  border: none;
+  color: white;
+  margin: 0px;
+  margin-left: 0%;
+  margin-top: 50%;
+  padding: 0 0;
+  width: 80%;
+  cursor: pointer;
+  height: 30%;
+  transition-duration: 0.4s;
+}
+
+#now-button {
+  background: #0b530294;
+  padding-right: 0;
+  border-radius: 0px;
+  border: none;
+  color: white;
+  margin: 0px;
+  margin-left: 0%;
+  margin-top: 50%;
+  padding: 0 0;
+  width: 80%;
+  cursor: pointer;
+  height: 30%;
+  transition-duration: 0.4s;
+}
+
+#play-button:hover {
+  background-color: #0b5302ec;
+}
+
+#now-button:hover {
+  background-color: #0b5302ec;
+}
+
+#play-button-scatter {
+  background: #0b530294;
+  padding-right: 0;
+  border-radius: 0px;
+  border: none;
+  color: white;
+  margin: 0px;
+  margin-left: 0%;
+  margin-top: 50%;
+  padding: 0 0;
+  width: 80%;
+  cursor: pointer;
+  height: 30%;
+  transition-duration: 0.4s;
+}
+
+#now-button-scatter {
+  background: #0b530294;
+  padding-right: 0;
+  border-radius: 0px;
+  border: none;
+  color: white;
+  margin: 0px;
+  margin-left: 0%;
+  margin-top: 50%;
+  padding: 0 0;
+  width: 80%;
+  cursor: pointer;
+  height: 30%;
+  transition-duration: 0.4s;
+}
+
+#play-button-scatter:hover {
+  background-color: #0b5302ec;
+}
+
+#now-button-scatter:hover {
+  background-color: #0b5302ec;
+}
+
+.line {
+  fill: none;
+  stroke-width: 2;
+  opacity: 0.45;
+}
+
+.line:hover {
+  opacity: 1;  
+  stroke-width: 5;
+}
+
+.overlay {
+fill: none;
+pointer-events: all;
+}
+
+/* Style the dots by assigning a fill and stroke */
+.dot {
+  fill: #ffab00;
+  stroke: #fff;
+}
+
+.legend-markers {
+  stroke: rgb(255, 255, 255);
+  stroke-width: 0.1;
+}
+
+.legend-bg {
+  fill: #e0e0e0f6;
+  opacity : 0.4;
+}
+
+.grid path {
+  stroke-width: 0;
+}
+
+.scatter-plot {
+  background-color: rgba(212, 212, 212, 0);
+}
+
+.line-chart {
+  background-color: rgba(212, 212, 212, 0);
+}
+
+circle {
+  stroke : black;
+  stroke-width : 0.4;
+  opacity : 0.6;
+}
+
+circle:hover {
+  opacity: 1;  
+}
+
+.bar {
+  /*fill: rgb(21, 90, 4); */
+  opacity: 0.7;
+}
+
+.bar:hover {
+  opacity: 1;  
+}
+
+.grid line {
+  stroke: rgb(139, 136, 136);
+  stroke-opacity: 0.7;
+  shape-rendering: crispEdges;
+}
+
+.grid path {
+  stroke-width: 0;
+}
