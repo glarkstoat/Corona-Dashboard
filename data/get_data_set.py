@@ -6,6 +6,7 @@ import os
 import pywintypes
 from win10toast import ToastNotifier
 
+# Windows notification
 toast = ToastNotifier()
 toast.show_toast("Covid Data Update", "The update has been started", duration=30)
 os.chdir(r"C:\Users\chris\Documents\GitHub\Corona-Dashboard\data")
