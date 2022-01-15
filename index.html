@@ -2,8 +2,8 @@
                 TODOS:
                 .) Tooltips under/beneath the charts to explain how to use them (look at jQuery)
                 .) Trace for given country in scatter plot
-                .) By clicking on country in scatter plot it should get highlighted all the other countries should get low opacity 
-                .) Log-axis of scatter plot shows strange values like 800m although value is very small (d3.format(".5s") issue with 0.1 being 100m(milli)). Different format?
+                .) By clicking on country in scatter plot it should get highlighted and all the other countries should get low opacity 
+                .) d3.format(".5s") issue with 0.1 being 100m(milli). Different format?
 -->
 
 <html>
@@ -345,7 +345,7 @@
                                                                 row[global_feature].length > 0 && // don't include if there is not data
                                                                 +row[global_feature] >= 0); // don't include if feature is below 0 (data cleaning)
 
-                        // Sort the data in descending order of the chosen feature and select top-13 countries
+                        // Sort the data in descending order of the chosen feature and select top-20 countries
                         data_barChart_top20 = data_barChart.sort((a, b) => d3.descending(+a[global_feature], +b[global_feature])).slice(0,20);
                                     
                         // maps the data to the axes 
@@ -430,7 +430,7 @@
                                                 .range([0, 1]);
                         drawLegend();
 
-                        // Update the xaxis domain with end_date taken from the csv-file
+                        // Update the x-axis domain with end_date taken from the csv-file
                         x_linechart.domain([start_date, new Date(global_date)]);
                         lineChart.selectAll(".x-axis")
                             .call(xAxis_line)
@@ -484,7 +484,7 @@
                             update_everything();
                         }
                         else if (global_date == formatDate(end_date)) {
-                            if (counter_dates <= 0) { // Inital case where nothing happended yet (play button was not clicked yet) and slider is on end_date by default
+                            if (counter_dates <= 0) { // Initial case where nothing happened yet (play button was not clicked yet) and slider is on end_date by default
                                 global_date = dates[counter_dates]; // resets global_date to start_date
 
                                 update_everything();
@@ -528,7 +528,7 @@
                             global_date = formatDate(end_date);
                             update_everything();
 
-                            // Simulate the initial case where the play button was not yet clicked for correct behaviour
+                            // Simulate the initial case where the play button was not yet clicked for correct behavior
                             resetTimer();
                             counter_dates = 0;
                         }
@@ -558,7 +558,7 @@
                                     .remove();                
                         };
 
-                        var margin_barChart = {top: 30, right: screen.width / 20, bottom: screen.width / 20, left: screen.width / 18},
+                        var margin_barChart = {top: 30, right: screen.width / 20, bottom: screen.width / 20, left: screen.width / 12},
                             width_barChart = screen.width / 2.5 - margin_barChart.left - margin_barChart.right,
                             height_barChart = screen.height / 2.4 - margin_barChart.top - margin_barChart.bottom;
                         
@@ -768,7 +768,7 @@
                                         .remove();
                         };
 
-                        var margin_line = {top: 20, right: screen.width / 15, bottom: screen.height / 15, left: screen.width / 18},
+                        var margin_line = {top: 20, right: screen.width / 12, bottom: screen.height / 15, left: screen.width / 18},
                             width_line = screen.width / 2.5 - margin_line.left - margin_line.right, 
                             height_line = screen.height / 2.6 - margin_line.top - margin_line.bottom;
                                             
