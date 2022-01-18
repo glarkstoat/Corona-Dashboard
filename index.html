@@ -78,7 +78,7 @@
                             <option value="male_smokers"> Male smokers (Share of male population) </option>
                             <option value="female_smokers"> Female Smokers (Share of female population) </option>
                             <option value="diabetes_prevalence"> Diabetes Prevalence </option>
-                            <option value="cardiovasc_death_rate"> Cardiovasc Death Rate </option>
+                            <option value="cardiovasc_death_rate"> Cardiovascular Death Rate </option>
                             <option value="extreme_poverty"> Extreme Poverty </option>
                             <option value="median_age"> Median Age </option>
                         </optgroup>    
@@ -88,7 +88,7 @@
                     and for the scatter plot (global feature & feature2). -->
                     <script>
                     
-                        // Dictionary to display readible format of features 
+                        // Dictionary to display readable format of features 
                         var feature_names = {"total_cases": "Total Cases",
                                                 "total_cases_per_million": "Total Cases per Million",
                                                 "new_cases_smoothed": "New Cases",
@@ -108,7 +108,7 @@
                                                 "population":"Population",
                                                 "median_age":"Median Age",
                                                 "extreme_poverty":"Extreme Poverty",
-                                                "cardiovasc_death_rate":"Cardiovasc. Death Rate",
+                                                "cardiovasc_death_rate":"Cardiovascular Death Rate",
                                                 "diabetes_prevalence":"Diabetes Prevalence",
                                                 "female_smokers":"Female Smokers (Share of female population)",
                                                 "male_smokers":"Male Smokers (Share of male population)",
@@ -119,7 +119,7 @@
                                                 "total_boosters_per_hundred":"Total Boosters per Hundred"
                                             };
                                             
-                        var feature_descritptions = {"total_cases": "Total confirmed cases of COVID-19",
+                        var feature_descriptions = {"total_cases": "Total confirmed cases of COVID-19",
                                                 "total_cases_per_million": "Total confirmed cases of COVID-19 per 1,000,000 people",
                                                 "new_cases_smoothed": "New confirmed cases of COVID-19 (7-day smoothed)",
                                                 "new_cases": "New confirmed cases of COVID-19",
@@ -284,7 +284,7 @@
                     // Sets the initial position of the handle to the most recent date
                     handle.attr("cx", width_slider);
 
-                    // Regulats what happens if slider is moved
+                    // Regulates what happens if slider is moved
                     const updateMap = mouse => {
                         // if ... else so that slider handle doesn't go beyond the edges of the track overlay
                         if (mouse > width_slider) { handle.attr("cx", width_slider); }
@@ -922,7 +922,7 @@
                         // Is called every time a country is clicked-on on the map
                         const drawLineChart = location => {
 
-                            // Update the xaxis domain with end_date taken from the csv-file
+                            // Update the x-axis domain with end_date taken from the csv-file
                             x_linechart.domain([start_date, end_date]);
                             lineChart.selectAll(".x-axis")
                                 .call(xAxis_line)
@@ -958,7 +958,7 @@
                                                     .range([0, 1]);
                                 drawLegend();
 
-                                // If country's maximum value is higher than current max, yscale
+                                // If country's maximum value is higher than current max, y-scale
                                 // must be updated!
                                 if (current_max > global_max) {
                                     
@@ -1010,7 +1010,7 @@
                                     }
                                 }
                                 else { // if country's max value is not greater than global max
-                                    // --> still necessarry to replot all lines, since min could change. 
+                                    // --> still necessary to re-plot all lines, since min could change. 
                                     reset_soft_line(); // removes all lines
 
                                     countries.forEach((d, i) => {
@@ -1065,7 +1065,7 @@
                                                     .range([0, 1]);
                             drawLegend();
 
-                            // Update the xaxis domain with end_date taken from the csv-file
+                            // Update the x-axis domain with end_date taken from the csv-file
                             x_linechart.domain([start_date, new Date(global_date)]);
                             lineChart.selectAll(".x-axis")
                                 .call(xAxis_line)
@@ -1107,7 +1107,7 @@
                 </div>
             </div>
 
-            <!-- Drowdown menus for selecting the x- and y-features for the scatter plot -->
+            <!-- Dropdown menus for selecting the x- and y-features for the scatter plot -->
             <div class="wrapper-div">
 
                 <div class="container">
@@ -1147,7 +1147,7 @@
                                     <option value="male_smokers"> Male smokers (Share of male population) </option>
                                     <option value="female_smokers"> Female Smokers (Share of female population) </option>
                                     <option value="diabetes_prevalence"> Diabetes Prevalence </option>
-                                    <option value="cardiovasc_death_rate"> Cardiovasc Death Rate </option>
+                                    <option value="cardiovasc_death_rate"> Cardiovascular Death Rate </option>
                                     <option value="extreme_poverty"> Extreme Poverty </option>
                                     <option value="median_age"> Median Age </option>
                                 </optgroup>
@@ -1190,7 +1190,7 @@
                                         <option value="male_smokers"> Male smokers (Share of male population) </option>
                                         <option value="female_smokers"> Female Smokers (Share of female population) </option>
                                         <option value="diabetes_prevalence"> Diabetes Prevalence </option>
-                                        <option value="cardiovasc_death_rate"> Cardiovasc Death Rate </option>
+                                        <option value="cardiovasc_death_rate"> Cardiovascular Death Rate </option>
                                         <option value="extreme_poverty"> Extreme Poverty </option>
                                         <option value="median_age"> Median Age </option>
                                     </optgroup>
@@ -1515,7 +1515,7 @@
                     // Sets the initial position of the handle to the most recent date
                     handle_scatter.attr("cx", width_slider_scatter);
 
-                    // Regulats what happens if slider is moved
+                    // Regulates what happens if slider is moved
                     const updateScatterAndSlider = mouse => {
                         // if ... else so that slider handle doesn't go beyond the edges of the track overlay
                         if (mouse > width_slider_scatter) { handle_scatter.attr("cx", width_slider_scatter); }
@@ -1573,7 +1573,7 @@
                                         .remove();
                         }
                         else if (global_date_scatter == formatDate(end_date)) {
-                            if (counter_dates_scatter <= 0) { // Inital case where nothing happended yet (play button was not clicked yet) and slider is on end_date by default
+                            if (counter_dates_scatter <= 0) { // Initial case where nothing happened yet (play button was not clicked yet) and slider is on end_date by default
                                 global_date_scatter = dates[counter_dates_scatter]; // resets global_date to start_date
 
                                 drawScatterPlot();
@@ -1626,7 +1626,7 @@
                             handle_scatter.attr("cx", x_slider_scatter(new Date(global_date_scatter)));
                             showName_scatter(formatDate_slider(new Date(global_date_scatter)));
 
-                            // Simulate the initial case where the play button was not yet clicked for correct behaviour
+                            // Simulate the initial case where the play button was not yet clicked for correct behavior
                             resetTimer_scatter();
                             counter_dates_scatter = 0;
                         }
