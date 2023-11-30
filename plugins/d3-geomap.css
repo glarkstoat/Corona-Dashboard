@@ -1,0 +1,29 @@
+.d3-geomap text {
+  fill: #333;
+  font-size: 12px; }
+
+.d3-geomap .background {
+  fill: none;
+  pointer-events: all; }
+
+.d3-geomap .unit {
+  cursor: pointer;
+  fill: #ccc;
+  stroke: #000;
+  opacity: 0.7;
+  stroke-width: .4px; }
+
+.d3-geomap .unit:hover {
+    cursor: pointer;
+    fill: #ccc;
+    opacity: 1;
+    stroke: #000000c5;
+    stroke-width: 1.2px; }
+
+.d3-geomap .legend-bg {
+  fill: rgba(212, 212, 212, 0.698);
+  fill-opacity: 0; }
+
+.d3-geomap .legend-bar {
+  stroke: rgb(184, 184, 184);
+  stroke-width: 1px; }
